@@ -1,0 +1,37 @@
+/splitwise-backend
+├── src/
+│   ├── api/
+│   │   ├── middleware/          // 🛡️ New: Houses the generic validation middleware
+│   │   │   └── validationMiddleware.ts // Reusable class-validator wrapper
+│   │   ├── routes/              // 🔄 Controller (Route Definition)
+│   │   │   ├── authRouter.ts
+│   │   │   └── expenseRouter.ts // Applies validationMiddleware before controller method
+│   │   └── controllers/         // 📦 Controller Logic (Delegates to Services)
+│   │       ├── authController.ts
+│   │       └── expenseController.ts
+│   │
+│   ├── core/
+│   │   ├── services/            // ⚙️ Business Logic (Low Interdependency)
+│   │   │   ├── userService.ts
+│   │   │   ├── expenseService.ts
+│   │   │   └── duesService.ts
+│   │   └── repositories/        // 💾 Data Access Layer
+│   │       ├── pgRepository.ts
+│   │       └── neo4jRepository.ts
+│   │
+│   ├── types/                   // 📝 All TypeScript Types & Validation DTOs
+│   │   ├── user.ts                // User DTOs (LoginDTO, UserResponse)
+│   │   ├── expense/               // **NEW: Folder for complex DTOs**
+│   │   │   ├── base.dto.ts          // Base Expense DTO (common fields)
+│   │   │   ├── split-equal.dto.ts   // DTO for the EQUAL split type
+│   │   │   ├── split-exact.dto.ts   // DTO for the EXACT split type
+│   │   │   ├── split-percent.dto.ts // DTO for the PERCENTAGE split type
+│   │   │   └── create-expense.dto.ts// The main request DTO that uses the DUs
+│   │   └── index.ts               // Re-exports all shared types and DTOs
+│   │
+│   ├── db/                      // 🧱 Database Initialization
+|   |   ├──neo4j-client.ts
+|   |
+│   └── index.ts                 // 🚀 Entry Point
+│
+└── ... (Config files)
