@@ -1,37 +1,120 @@
-/splitwise-backend
-├── src/
-│   ├── api/
-│   │   ├── middleware/          // 🛡️ New: Houses the generic validation middleware
-│   │   │   └── validationMiddleware.ts // Reusable class-validator wrapper
-│   │   ├── routes/              // 🔄 Controller (Route Definition)
-│   │   │   ├── authRouter.ts
-│   │   │   └── expenseRouter.ts // Applies validationMiddleware before controller method
-│   │   └── controllers/         // 📦 Controller Logic (Delegates to Services)
-│   │       ├── authController.ts
-│   │       └── expenseController.ts
+/batwara-backend
+├── apps/
+│   ├── api-gateway/                     # 🌐 Unified HTTP entry point
+│   │   ├── src/
+│   │   │   ├── routes/                  # REST entrypoints → service RPC
+│   │   │   │   ├── auth.routes.ts
+│   │   │   │   ├── group.routes.ts
+│   │   │   │   ├── expense.routes.ts
+│   │   │   │   └── settlement.routes.ts
+│   │   │   ├── controllers/             # Minimal controllers
+│   │   │   ├── middleware/
+│   │   │   │   └── validation.ts
+│   │   │   ├── server.ts
+│   │   │   └── index.ts
+│   │   └── package.json
 │   │
-│   ├── core/
-│   │   ├── services/            // ⚙️ Business Logic (Low Interdependency)
-│   │   │   ├── userService.ts
-│   │   │   ├── expenseService.ts
-│   │   │   └── duesService.ts
-│   │   └── repositories/        // 💾 Data Access Layer
-│   │       ├── pgRepository.ts
-│   │       └── neo4jRepository.ts
-│   │
-│   ├── types/                   // 📝 All TypeScript Types & Validation DTOs
-│   │   ├── user.ts                // User DTOs (LoginDTO, UserResponse)
-│   │   ├── expense/               // **NEW: Folder for complex DTOs**
-│   │   │   ├── base.dto.ts          // Base Expense DTO (common fields)
-│   │   │   ├── split-equal.dto.ts   // DTO for the EQUAL split type
-│   │   │   ├── split-exact.dto.ts   // DTO for the EXACT split type
-│   │   │   ├── split-percent.dto.ts // DTO for the PERCENTAGE split type
-│   │   │   └── create-expense.dto.ts// The main request DTO that uses the DUs
-│   │   └── index.ts               // Re-exports all shared types and DTOs
-│   │
-│   ├── db/                      // 🧱 Database Initialization
-|   |   ├──neo4j-client.ts
-|   |
-│   └── index.ts                 // 🚀 Entry Point
+│   └── scripts/                         # Dev tools, DB migrations, seeds
+│       ├── migrate.ts
+│       └── seed.ts
 │
-└── ... (Config files)
+├── services/                             # 🔥 Each business domain fully isolated
+│   ├── user-service/
+│   │   ├── src/
+│   │   │   ├── domain/                   # Business logic
+│   │   │   │   ├── user.entity.ts
+│   │   │   │   └── user.service.ts
+│   │   │   ├── repository/
+│   │   │   │   ├── user.repo.interface.ts
+│   │   │   │   └── postgres/
+│   │   │   │       └── user.pg.repo.ts
+│   │   │   ├── dto/
+│   │   │   │   ├── register.dto.ts
+│   │   │   │   ├── login.dto.ts
+│   │   │   │   └── user.response.ts
+│   │   │   ├── events/
+│   │   │   │   ├── user.created.event.ts
+│   │   │   │   └── eventHandlers.ts
+│   │   │   └── index.ts
+│   │   └── package.json
+│   │
+│   ├── group-service/
+│   │   ├── src/domain/group.service.ts
+│   │   ├── src/domain/group.entity.ts
+│   │   ├── src/repository/group.repo.interface.ts
+│   │   ├── src/repository/postgres/group.pg.repo.ts
+│   │   ├── src/dto/create-group.dto.ts
+│   │   ├── src/events/group.created.event.ts
+│   │   └── package.json
+│   │
+│   ├── expense-service/
+│   │   ├── src/domain/expense.service.ts
+│   │   ├── src/domain/expense.entity.ts
+│   │   ├── src/repository/postgres/expense.pg.repo.ts
+│   │   ├── src/dto/
+│   │   │   ├── base-expense.dto.ts
+│   │   │   ├── split-equal.dto.ts
+│   │   │   ├── split-exact.dto.ts
+│   │   │   ├── split-percent.dto.ts
+│   │   │   └── create-expense.dto.ts
+│   │   ├── src/events/expense.created.event.ts
+│   │   └── package.json
+│   │
+│   ├── settlement-service/
+│   │   ├── src/domain/settlement.service.ts
+│   │   ├── src/repository/graph/settlement.graph.repo.ts   # Neo4j
+│   │   ├── src/events/settlement.completed.event.ts
+│   │   └── package.json
+│   │
+│   ├── notification-service/             # Listens to events only
+│   │   ├── src/consumers/
+│   │   │   ├── user.events.consumer.ts
+│   │   │   └── expense.events.consumer.ts
+│   │   ├── src/providers/email.provider.ts
+│   │   ├── src/providers/push.provider.ts
+│   │   └── package.json
+│
+├── infra/
+│   ├── event-bus/                        # Kafka / NATS message broker
+│   │   ├── eventBus.ts
+│   │   ├── publisher.ts
+│   │   └── subscriber.ts
+│   │
+│   ├── db/                               # All DB clients in one place
+│   │   ├── postgres/
+│   │   │   └── postgres-client.ts
+│   │   ├── neo4j/
+│   │   │   └── neo4j-client.ts
+│   │   └── redis/
+│   │       └── redis-client.ts
+│
+│   ├── config/
+│   │   ├── env.ts
+│   │   └── constants.ts
+│   │
+│   └── security/
+│       ├── jwt.ts
+│       ├── password.ts
+│       └── crypto.ts
+│
+├── shared/
+│   ├── events/                            # 🔄 Event Contract Schemas (source of truth)
+│   │   ├── user.events.ts
+│   │   ├── group.events.ts
+│   │   ├── expense.events.ts
+│   │   └── settlement.events.ts
+│   │
+│   ├── interfaces/                        # Reusable TS interfaces
+│   │   ├── IBaseRepository.ts
+│   │   └── IServiceResponse.ts
+│   │
+│   ├── utils/                             # Pure utility functions
+│   │   ├── logger.ts
+│   │   └── error.ts
+│   │
+│   └── types.ts                           # Global shared types
+│
+├── package.json
+├── tsconfig.json
+├── .env.example
+└── README.md

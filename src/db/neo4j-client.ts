@@ -5,7 +5,7 @@ dotenv.config();
 
 (async () => {
   const URI = process.env.NEO4J_URI
-  const USER = process.env.NEO4J_USER
+  const USER = process.env.NEO4J_URI
   const PASSWORD = process.env.NEO4J_PASSWORD
   let driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD))
   const serverInfo = await driver.getServerInfo()
