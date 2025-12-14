@@ -1,5 +1,6 @@
-import { db } from '../../../shared/infra/db/postgres-client'; // Import your DB client
-import { RegisterUserDTO } from '../dtos/register-user.dto';
+import { db } from '../../../shared/infra/db/postgres/postgres-client.js'; // Import your DB client
+import type { RegisterUserDTO } from '../dtos/register-user.dto.js';
+import { Users } from './user.schema.js';
 
 export class UserPGRepository {
   // Method to check if email exists

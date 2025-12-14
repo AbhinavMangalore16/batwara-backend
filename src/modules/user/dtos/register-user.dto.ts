@@ -1,7 +1,9 @@
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import {z} from 'zod';
+const RegisterUserSchema = z.object({
+    name:z.string({message:"naam daal de bsdke"}),
+    email:z.email({message:"email daal de bsdke"}),
+    password:z.string({message:"pwd daal de bsdke"}).min(8),
+    dob:z.date({message:"birthday date optional(for selling to meta)"})
+})
 
-export class RegisterUserDTO {
-  // Define class properties with decorators
-  // e.g., name, email, password
-  // This ensures request body is valid before it reaches the controller
-}
+export type RegisterUserDTO = z.infer<typeof RegisterUserSchema>;
