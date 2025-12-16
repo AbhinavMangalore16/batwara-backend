@@ -1,4 +1,4 @@
-import { pgTable, date, uuid, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, date, uuid, text, timestamp, index, uniqueIndex } from 'drizzle-orm/pg-core';
 
 // columns.helpers.ts
 const timestamps = {
@@ -9,10 +9,14 @@ const timestamps = {
 
 
 export const Users = pgTable('users', {
-  id: uuid().defaultRandom().primaryKey(),
-  name: text('name').notNull(),
-  email:text('email').notNull().unique(),
-  hashed_password:text().notNull(),
-  dob:date(),
-  ...timestamps,
-});
+    id: uuid().defaultRandom().primaryKey(),
+    name: text('name').notNull(),
+    email:text('email').notNull().unique(),
+    hashed_password:text().notNull(),
+    dob:date(),
+    ...timestamps,
+    },
+    (table) => [
+    uniqueIndex("email_idx").on(table.email)
+    ]
+);
