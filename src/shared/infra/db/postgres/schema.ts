@@ -1,5 +1,5 @@
-import { Users } from "../../../../modules/user/repo/user.schema.js";
+import { Users } from "../../../../modules/user/repo/user.schema"
 
-export const schema = {
+export {
     Users,
 }
