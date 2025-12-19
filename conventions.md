@@ -120,5 +120,3 @@ Result<T> = { ok: true; value: T } | { ok: false; error: DomainError }
 ````
 
 we are using "codebase first" db schema migration design
-cmds -> $ npx drizzle-kit generate --config=./src/shared/infra/db/postgres/drizzle.config.ts
-$ npx drizzle-kit migrate --config=./src/shared/infra/db/postgres/drizzle.config.ts

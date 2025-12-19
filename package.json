@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node --loader ts-node/esm src/index.ts"
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "generate": "bunx drizzle-kit generate --config=./src/shared/infra/db/postgres/drizzle.config.ts",
+    "migrate": "bunx drizzle-kit migrate --config=./src/shared/infra/db/postgres/drizzle.config.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,15 +17,12 @@
     "@types/node": "^24.10.1",
     "@types/pg": "^8.16.0",
     "drizzle-kit": "^0.31.8",
-    "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "better-auth": "^1.4.7",
     "class-validator": "^0.14.3",
-    "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
     "neo4j-driver": "^6.0.1",

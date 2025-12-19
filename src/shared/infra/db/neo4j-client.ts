@@ -1,7 +1,4 @@
 var neo4j = require('neo4j-driver');
-import dotenv from "dotenv";
-dotenv.config();
-
 
 (async () => {
   const URI = process.env.NEO4J_URI
