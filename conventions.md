@@ -120,3 +120,6 @@ Result<T> = { ok: true; value: T } | { ok: false; error: DomainError }
 ````
 
 we are using "codebase first" db schema migration design
+TODOS
+-> dynamic imports
+-> schema indexing

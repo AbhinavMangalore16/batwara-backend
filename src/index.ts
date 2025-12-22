@@ -1,11 +1,20 @@
 import express from 'express'
 import type {Request,Response} from 'express'
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./shared/infra/auth/better-auth.config";
+
 const app = express()
-const port = 3000
+const port = 6969
+
+app.all("/api/auth/{*any}", toNodeHandler(auth));
+
+app.use(express.json());
 
 app.get('/', (req:Request, res:Response) => {
   res.send('Hello World!')
 })
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
