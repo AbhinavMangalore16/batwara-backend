@@ -8,9 +8,10 @@ export class UserController {
     try {
       const email:string | undefined = req.header("email");
       if(email){
-        const result = this.userService.getUserProfile(email);
-        return res.status(201).json({message: "User details sent.",result})
+        const result = await this.userService.getUserProfile(email);
+        return res.status(201).json({message: "User details sent.",result});
       }
+      else return res.status(404).json({message: "bsdk email to daal header me"})
       // 1. Extract body (req.body)
       // 2. Call service (this.userService.register)
       // 3. Send success response (res.status(201).json(...))

@@ -3,7 +3,7 @@ import { UserController } from './user.controller';
 import { UserService } from '../domain/user.service';
 import { UserPGRepository } from '../repos/user.pg.repo';
 
-const router = Router();
+const userRouter = Router();
 
 // MANUAL DEPENDENCY INJECTION (The "Poor Man's" Container)
 // We instantiate everything here to wire them up.
@@ -12,5 +12,5 @@ const userService = new UserService(userRepo);
 const userController = new UserController(userService);
 
 // Define the route
-router.get('/get_user', (req,res) => userController.getUserDetails(req, res))
-export default router;
+userRouter.get('/me', (req,res) => userController.getUserDetails(req, res))
+export default userRouter;
