@@ -120,6 +120,13 @@ Result<T> = { ok: true; value: T } | { ok: false; error: DomainError }
 ````
 
 we are using "codebase first" db schema migration design
+defulath auth paths -> 
+/api/auth/sign-in
+/api/auth/sign-up
+/api/auth/sign-out
+/api/auth/callback/[provider] (for OAuth providers like Google, GitHub, etc.)
+/api/auth/forgot-password (if the plugin is used)
+/api/auth/reset-password (if the plugin is used) 
 TODOS
 -> dynamic imports
 -> schema indexing

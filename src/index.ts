@@ -7,7 +7,7 @@ import userRouter from "../src/modules/user/api/user.routes"
 const app = express()
 const port = 6969
 
-app.all("/api/auth/{*any}", toNodeHandler(auth));
+app.all("/api/auth/{*any}", toNodeHandler(auth)); //allows better auths predefined rouet paths to actually execute
 
 app.use(express.json());
 

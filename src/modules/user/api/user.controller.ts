@@ -6,7 +6,7 @@ export class UserController {
 
   async getUserDetails(req: Request, res: Response) {
     try {
-      const email:string | undefined = req.header("email");
+      const email:string | undefined = res.locals.email;
       if(email){
         const result = await this.userService.getUserProfile(email);
         return res.status(201).json({message: "User details sent.",result});

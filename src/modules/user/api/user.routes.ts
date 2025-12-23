@@ -2,15 +2,18 @@ import { Router } from 'express';
 import { UserController } from './user.controller';
 import { UserService } from '../domain/user.service';
 import { UserPGRepository } from '../repos/user.pg.repo';
+import { authMiddleware } from '../../../shared/infra/auth/better-auth.middleware';
+import type {Request,Response} from 'express'
 
 const userRouter = Router();
 
-// MANUAL DEPENDENCY INJECTION (The "Poor Man's" Container)
-// We instantiate everything here to wire them up.
 const userRepo = new UserPGRepository();
 const userService = new UserService(userRepo);
 const userController = new UserController(userService);
 
 // Define the route
-userRouter.get('/me', (req,res) => userController.getUserDetails(req, res))
+userRouter.get('/me',authMiddleware, (req:Request,res:Response) => {
+    return userController.getUserDetails(req, res)
+}
+)
 export default userRouter;
