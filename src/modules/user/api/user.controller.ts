@@ -12,12 +12,21 @@ export class UserController {
         return res.status(201).json({message: "User details sent.",result});
       }
       else return res.status(404).json({message: "bsdk email to daal header me"})
-      // 1. Extract body (req.body)
-      // 2. Call service (this.userService.register)
-      // 3. Send success response (res.status(201).json(...))
     } catch (error) {
       return res.status(400).json({error: error})
-      // 4. Handle errors (res.status(400).json(...))
+    }
+  }
+
+  async patchUserDetails(req: Request, res: Response) {
+    try {
+      const id:string | undefined = res.locals.id;
+      if(id){
+        const result = await this.userService.patchUserProfile(id,req.body);
+        return res.status(201).json({message: "User details updated"});
+      }
+      else return res.status(404).json({message: "bsdk id to daal header me"})
+    } catch (error) {
+      return res.status(400).json({error: error})
     }
   }
 }

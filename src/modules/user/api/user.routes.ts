@@ -14,6 +14,9 @@ const userController = new UserController(userService);
 // Define the route
 userRouter.get('/me',authMiddleware, (req:Request,res:Response) => {
     return userController.getUserDetails(req, res)
-}
-)
+})
+
+userRouter.patch('/me',authMiddleware, (req:Request,res:Response) => {
+    return userController.patchUserDetails(req, res)
+})
 export default userRouter;

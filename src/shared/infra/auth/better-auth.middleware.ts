@@ -6,6 +6,7 @@ export const authMiddleware = async(req:Request,res:Response,next:NextFunction)=
     const session = await auth.api.getSession({headers: {cookie:req.headers.cookie ?? ""}});
     if(session){
         res.locals.email = session.user.email;
+        res.locals.id = session.user.id;
         next();
     }
     else res.status(404).json({message:"daravne h bhoot teri maa ki choot"})

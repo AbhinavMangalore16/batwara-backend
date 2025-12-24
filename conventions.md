@@ -130,3 +130,5 @@ defulath auth paths ->
 TODOS
 -> dynamic imports
 -> schema indexing
+-> study migrations and also addition of new fields like dob in default betterauth schema
+-> fix hooks.ts acc to requirements
