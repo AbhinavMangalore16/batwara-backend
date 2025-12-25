@@ -1,4 +1,4 @@
-import { UserPGRepository } from '../repos/user.pg.repo';
+import { UserPGRepository } from '../repos/user.repo';
 import type { dtoTypes } from '../dtos/index';
 
 export class UserService {
