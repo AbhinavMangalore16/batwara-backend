@@ -3,11 +3,17 @@ import type {Request,Response,NextFunction} from 'express'
 import { auth } from "./better-auth.config";
 
 export const authMiddleware = async(req:Request,res:Response,next:NextFunction)=>{
-    const session = await auth.api.getSession({headers: {cookie:req.headers.cookie ?? ""}});
-    if(session){
-        res.locals.email = session.user.email;
-        res.locals.id = session.user.id;
-        next();
+    try{
+        const session = await auth.api.getSession({headers: {cookie:req.headers.cookie ?? ""}});
+        if(session){
+            res.locals.email = session.user.email;
+            res.locals.id = session.user.id;
+            next();
+        }
+        else res.status(401).json({message:"Unauthorized "})
     }
-    else res.status(404).json({message:"daravne h bhoot teri maa ki choot"})
+    catch(error){
+        console.error('Session invalidated:', error);
+        res.status(500).json({message: "Auth service unavailable!"})
+    }
 }

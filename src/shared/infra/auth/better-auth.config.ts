@@ -4,7 +4,7 @@ import { db } from "../db/postgres/postgres-client.config"; // your drizzle inst
 // import { hooks } from "./better-auth.hooks";
 
 export const auth = betterAuth({
-    appName: "awaara batwaara",
+    appName: "batwaara",
     database: drizzleAdapter(db, {
         provider: "pg", // or "mysql", "sqlite"
     }),

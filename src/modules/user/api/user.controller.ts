@@ -11,7 +11,7 @@ export class UserController {
         const result = await this.userService.getUserProfile(email);
         return res.status(201).json({message: "User details sent.",result});
       }
-      else return res.status(404).json({message: "bsdk email to daal header me"})
+      else return res.status(404).json({message: "Email not provided in session header"})
     } catch (error) {
       return res.status(400).json({error: error})
     }
@@ -24,7 +24,7 @@ export class UserController {
         const result = await this.userService.patchUserProfile(id,req.body);
         return res.status(201).json({message: "User details updated"});
       }
-      else return res.status(404).json({message: "bsdk id to daal header me"})
+      else return res.status(404).json({message: "ID not provided in session header"})
     } catch (error) {
       return res.status(400).json({error: error})
     }

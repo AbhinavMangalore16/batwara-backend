@@ -5,7 +5,7 @@ import { auth } from "./shared/infra/auth/better-auth.config";
 import userRouter from "../src/modules/user/api/user.routes"
 
 const app = express()
-const port = 6969
+const port = Number(process.env.PORT) || 8000;
 
 app.all("/api/auth/{*any}", toNodeHandler(auth)); //allows better auths predefined rouet paths to actually execute
 

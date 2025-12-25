@@ -5,7 +5,7 @@ export const databaseHooks:BetterAuthOptions["databaseHooks"] = {
 			create: {
 				before: async (user) => {
 					// Modify user data before creation
-					return { data: { ...user, customField: "value" } };
+					return { data: { ...user} };
 				},
 				after: async (user) => {
 					// Perform actions after user creation
