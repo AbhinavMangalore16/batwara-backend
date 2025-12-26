@@ -14,7 +14,7 @@ export const databaseHooks:BetterAuthOptions["databaseHooks"] = {
 			update: {
 				before: async (userData) => {
 					// Modify user data before update
-					return { data: { ...userData, updatedAt: new Date() } };
+					return { data: { ...userData} };
 				},
 				after: async (user) => {
 					// Perform actions after user update
