@@ -10,7 +10,7 @@ import userRouter from "../src/modules/user/api/user.routes"
 const app = express()
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://batwara-five.vercel.app"], 
+    origin: ["http://localhost:3000", process.env.FRONTEND_URL || ""], 
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
