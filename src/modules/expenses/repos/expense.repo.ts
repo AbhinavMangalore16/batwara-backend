@@ -1,10 +1,15 @@
 import { db } from '../../../shared/infra/db/postgres/postgres-client.config.js'; // Import your DB client
 import { split, bill } from './expense.schema';
 
+interface returnObject{
+    transactionId:string
+}
+
 interface splitObject{
     userId:string,
     splitAmount:number
 }
+
 interface billObject{
     totalAmount:number,
     description:string,
@@ -13,8 +18,8 @@ interface billObject{
 }
 
 export class ExpensePGRepository {
-  async splitOnThatThang(userId:string,billObject:billObject): Promise<any>{  //easter egg => https://tinyurl.com/385e4th9
-    await db.transaction(async (tx)=>{
+  async splitOnThatThang(userId:string,billObject:billObject): Promise<returnObject|null>{  //easter egg => https://tinyurl.com/385e4th9
+    const data:string = await db.transaction(async (tx)=>{
         const res = await tx.
             insert(bill).
             values({
@@ -37,7 +42,11 @@ export class ExpensePGRepository {
         await tx.
         insert(split).
         values(splitArrayData);
+        return res[0].id;
     });
+    return {
+        transactionId:data
+    }
   }
 
 }
