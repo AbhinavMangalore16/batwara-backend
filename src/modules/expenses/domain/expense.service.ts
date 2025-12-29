@@ -1,57 +1,59 @@
 import { ExpensePGRepository } from "../repos/expense.repo";
-
-interface equalSplitObject{
-    userId:string,
-}
-
-interface splitObject{
-    userId:string,
-    split:number
-}
-
-interface billObject{
-    totalAmount:number,
-    description:string,
-    splitType:"equal"|"percentage"|"exact",
-    userData:splitObject[] | equalSplitObject[]
-}
+import { dtoTypes } from "../dtos";
 
 export class ExpenseService {
   constructor(private expenseRepo: ExpensePGRepository) {}
 
-  async createBill(id:string,billingObject:billObject):Promise<string|null> {
+  async createBill(id:string,billingObject:dtoTypes["BillDTO"]):Promise<string|null> {
     let mappedData;
-    if(billingObject.splitType == "equal"){
-        mappedData = billingObject.userData.map((val)=>{
+    if(billingObject.splitData.splitType == "equal"){
+        mappedData = billingObject.splitData.data.map((val)=>{
             return {
                 userId:val.userId,
-                splitAmount:billingObject.totalAmount/billingObject.userData.length
+                splitAmount:Math.floor(billingObject.totalAmount/billingObject.splitData.data.length)
             }
         })
+        const myBillingObject = {
+            totalAmount:billingObject.totalAmount,
+            description:billingObject.description,
+            splitType:billingObject.splitData.splitType,
+            splitData:mappedData
+        }
+        const res = await this.expenseRepo.splitOnThatThang(id,myBillingObject);
+        return (res?.transactionId?res.transactionId:null);
     }
-    else if(billingObject.splitType == "exact"){
-        mappedData = billingObject.userData.map((val)=>{
+    else if(billingObject.splitData.splitType == "exact"){
+        mappedData = billingObject.splitData.data.map((val)=>{
             return {
                 userId:val.userId,
-                splitAmount:val.split
+                splitAmount:val.amount
             }
         })
+        const myBillingObject = {
+            totalAmount:billingObject.totalAmount,
+            description:billingObject.description,
+            splitType:billingObject.splitData.splitType,
+            splitData:mappedData
+        }
+        const res = await this.expenseRepo.splitOnThatThang(id,myBillingObject);
+        return (res?.transactionId?res.transactionId:null);
     }
-    else if(billingObject.splitType == "percentage"){
-        mappedData = billingObject.userData.map((val)=>{
+    else if(billingObject.splitData.splitType == "percentage"){
+        mappedData = billingObject.splitData.data.map((val)=>{
             return {
                 userId:val.userId,
-                splitAmount:(val.split*billingObject.totalAmount)/100
+                splitAmount:Math.floor((val.percentage*billingObject.totalAmount)/100)
             }
         })
+        const myBillingObject = {
+            totalAmount:billingObject.totalAmount,
+            description:billingObject.description,
+            splitType:billingObject.splitData.splitType,
+            splitData:mappedData
+        }
+        const res = await this.expenseRepo.splitOnThatThang(id,myBillingObject);
+        return (res?.transactionId?res.transactionId:null);
     }
-    const myBillingObject = {
-        totalAmount:billingObject.totalAmount,
-        description:billingObject.description,
-        splitType:billingObject.splitType,
-        splitData:mappedData
-    }
-    const res = await this.expenseRepo.splitOnThatThang(id,myBillingObject);
-    return (res?.transactionId?res.transactionId:null);
+    return null;
   }
 }
