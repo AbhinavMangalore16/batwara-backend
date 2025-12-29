@@ -1,7 +1,7 @@
 import { db } from '../../../shared/infra/db/postgres/postgres-client.config.js'; // Import your DB client
 import type { dtoTypes } from '../dtos/index';
 import { Schemas } from '../dtos/index';
-import { user } from './auth.schema';
+import { user } from './auth.schema.js';
 import { eq } from "drizzle-orm"
 
 export class UserPGRepository {

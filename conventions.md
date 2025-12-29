@@ -120,6 +120,7 @@ Result<T> = { ok: true; value: T } | { ok: false; error: DomainError }
 ````
 
 we are using "codebase first" db schema migration design
+trying to follow -> Single Responsibility Principle (SRP) A class should have one reason to change.
 defulath auth paths -> 
 /api/auth/sign-in
 /api/auth/sign-up
@@ -132,3 +133,4 @@ TODOS
 -> schema indexing
 -> study migrations and also addition of new fields like dob in default betterauth schema
 -> fix hooks.ts acc to requirements
+-> add mappers (cant use dtos everywhere)
