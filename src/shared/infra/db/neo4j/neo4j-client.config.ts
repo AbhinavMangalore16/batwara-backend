@@ -1,4 +1,4 @@
-import neo4j from "neo4j-driver" 
+import neo4j,{Driver} from "neo4j-driver" 
 
 const URI = process.env.NEO4J_URI;
 const USER = process.env.NEO4J_USER;
@@ -7,6 +7,16 @@ if(!URI || !USER || !PASSWORD){
   throw new Error("env vars not defined for neo4j");
 }
 
-export const graphDb = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
+let graphDb:Driver;
+
+export const graph = ()=>{
+  if(graphDb)return graphDb
+  else graphDb = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
+  return graphDb
+}
+
+
+
+
 
 
