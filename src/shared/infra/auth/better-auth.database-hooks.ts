@@ -1,23 +1,36 @@
 import type { BetterAuthOptions } from "better-auth";
+import { graph } from "../db/neo4j/neo4j-client.config";
 
 export const databaseHooks:BetterAuthOptions["databaseHooks"] = {
 		user: {
 			create: {
-				before: async (user) => {
-					// Modify user data before creation
-					return { data: { ...user} };
-				},
 				after: async (user) => {
-					// Perform actions after user creation
+					const driver = graph();
+					console.log(user,"my user")
+					let { records, summary } = await driver.executeQuery(`
+						CREATE (p:Person {id: $userId})`,
+						{ userId:user.id }
+					)
+					// Summary information
+					console.log(
+					`The query \`${summary.query.text}\` ` +
+					`returned ${records.length} nodes.\n`
+					)
 				}
 			},
-			update: {
-				before: async (userData) => {
-					// Modify user data before update
-					return { data: { ...userData} };
-				},
+			delete: {
 				after: async (user) => {
-					// Perform actions after user update
+					const driver = graph();
+					let { records, summary } = await driver.executeQuery(`
+						MATCH (p:Person WHERE p.id = $userId)
+  						DETACH DELETE p`,
+						{ userId : user.id}
+					)
+					// Summary information
+					console.log(
+					`The query \`${summary.query.text}\` ` +
+					`returned ${records.length} nodes.\n`
+					)
 				}
 			}
 		},

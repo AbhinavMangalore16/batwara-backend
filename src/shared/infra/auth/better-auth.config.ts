@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../db/postgres/postgres-client.config"; // your drizzle instance
+import { databaseHooks } from "./better-auth.database-hooks";
 // import { hooks } from "./better-auth.hooks";
 
 export const auth = betterAuth({
@@ -12,6 +13,7 @@ export const auth = betterAuth({
     emailAndPassword: { 
         enabled: true, 
     }, 
+    databaseHooks,
     //hooks,
     socialProviders: { 
         github: { 

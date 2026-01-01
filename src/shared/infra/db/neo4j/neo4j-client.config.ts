@@ -14,9 +14,3 @@ export const graph = ()=>{
   else graphDb = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
   return graphDb
 }
-
-
-
-
-
-
