@@ -128,9 +128,15 @@ defulath auth paths ->
 /api/auth/callback/[provider] (for OAuth providers like Google, GitHub, etc.)
 /api/auth/forgot-password (if the plugin is used)
 /api/auth/reset-password (if the plugin is used) 
+
+in case of db migration history fucked delete folder src/shared/default and then run (subject to change):-
+bun run pull->bun run generate->bun run migrate->delete everything inside 0000_*.sql -> bun run migrate 
+
+
 TODOS
 -> dynamic imports
 -> schema indexing
 -> study migrations and also addition of new fields like dob in default betterauth schema
 -> fix hooks.ts acc to requirements
 -> add mappers (cant use dtos everywhere)
+-> separate migration folders for local experimantation and prod 

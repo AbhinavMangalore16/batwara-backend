@@ -7,7 +7,8 @@
     "start": "bun src/index.ts",
     "auth-generate": "bunx @better-auth/cli generate --config=./src/shared/infra/auth/better-auth.config.ts --output ./src/modules/user/repos/auth.schema.ts",
     "generate": "bunx drizzle-kit generate --config=./src/shared/infra/db/postgres/drizzle.config.ts",
-    "migrate": "bunx drizzle-kit migrate --config=./src/shared/infra/db/postgres/drizzle.config.ts"
+    "migrate": "bunx drizzle-kit migrate --config=./src/shared/infra/db/postgres/drizzle.config.ts",
+    "pull": "bunx drizzle-kit pull --config=./src/shared/infra/db/postgres/drizzle.config.ts"
   },
   "keywords": [],
   "author": "",
