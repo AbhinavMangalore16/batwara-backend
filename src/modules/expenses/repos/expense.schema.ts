@@ -1,4 +1,5 @@
-import { pgTable, date, uuid, text, timestamp, index, uniqueIndex, integer, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, integer, check } from 'drizzle-orm/pg-core';
+import { sql } from "drizzle-orm";
 import { user } from '../../user/repos/auth.schema';
 
 
@@ -9,8 +10,6 @@ const timestamps = {
   deleted_at: timestamp(),
 }
 
-export const splitTypeEnum = pgEnum('splitType', ['equal', 'exact', 'percentage']);
-
 //Note:amount stored as paise
 
 export const bill = pgTable('bill', {
@@ -18,9 +17,12 @@ export const bill = pgTable('bill', {
     owner:text().references(()=>user.id),
     description:text('description'),
     totalAmount:integer().notNull(),
-    splitType:splitTypeEnum(),
+    splitType:text().notNull(),
     ...timestamps,
     },
+    (table)=>[
+      check("split_type_check1", sql`${table.splitType} in ('equal','percentage','exact')`),
+    ]
 );
 
 export const split = pgTable('split', {

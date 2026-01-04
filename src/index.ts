@@ -3,6 +3,7 @@ import type {Request,Response} from 'express'
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./shared/infra/auth/better-auth.config";
 import userRouter from "../src/modules/user/api/user.routes"
+import expenseRouter from './modules/expenses/api/expense.routes';
 
 const app = express()
 const port = 6969
@@ -16,6 +17,7 @@ app.get('/', (req:Request, res:Response) => {
 })
 
 app.use("/api/users/",userRouter);
+app.use("/api/expenses/",expenseRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
