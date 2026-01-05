@@ -19,7 +19,7 @@ export class ExpenseService {
             splitType:billingObject.splitData.splitType,
             splitData:mappedData
         }
-        const res = await this.expenseRepo.splitOnThatThang(id,myBillingObject);
+        const res = await this.expenseRepo.splitThat(id,myBillingObject);
         return (res?.transactionId?res.transactionId:null);
     }
     else if(billingObject.splitData.splitType == "exact"){
@@ -35,7 +35,7 @@ export class ExpenseService {
             splitType:billingObject.splitData.splitType,
             splitData:mappedData
         }
-        const res = await this.expenseRepo.splitOnThatThang(id,myBillingObject);
+        const res = await this.expenseRepo.splitThat(id,myBillingObject);
         return (res?.transactionId?res.transactionId:null);
     }
     else if(billingObject.splitData.splitType == "percentage"){
@@ -51,7 +51,7 @@ export class ExpenseService {
             splitType:billingObject.splitData.splitType,
             splitData:mappedData
         }
-        const res = await this.expenseRepo.splitOnThatThang(id,myBillingObject);
+        const res = await this.expenseRepo.splitThat(id,myBillingObject);
         return (res?.transactionId?res.transactionId:null);
     }
     return null;

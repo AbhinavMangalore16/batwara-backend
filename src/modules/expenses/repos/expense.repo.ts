@@ -18,7 +18,7 @@ interface billObject{
 }
 
 export class ExpensePGRepository {
-  async splitOnThatThang(userId:string,billObject:billObject): Promise<returnObject|null>{  //easter egg => https://tinyurl.com/385e4th9
+  async splitThat(userId:string,billObject:billObject): Promise<returnObject|null>{  //easter egg => https://tinyurl.com/385e4th9
     const data:string = await db.transaction(async (tx)=>{
         const res = await tx.
             insert(bill).
