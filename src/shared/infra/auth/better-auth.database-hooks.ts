@@ -5,7 +5,7 @@ export const databaseHooks:BetterAuthOptions["databaseHooks"] = {
 			create: {
 				before: async (user) => {
 					// Modify user data before creation
-					return { data: { ...user, customField: "value" } };
+					return { data: { ...user} };
 				},
 				after: async (user) => {
 					// Perform actions after user creation
@@ -14,7 +14,7 @@ export const databaseHooks:BetterAuthOptions["databaseHooks"] = {
 			update: {
 				before: async (userData) => {
 					// Modify user data before update
-					return { data: { ...userData, updatedAt: new Date() } };
+					return { data: { ...userData} };
 				},
 				after: async (user) => {
 					// Perform actions after user update
