@@ -9,4 +9,6 @@ if(!URI || !USER || !PASSWORD){
 
 export const graphDb = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
 
-
+export async function closeNeo4jDriver(): Promise<void> {
+  await graphDb.close();
+}

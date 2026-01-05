@@ -14,7 +14,7 @@ const timestamps = {
 
 export const bill = pgTable('bill', {
     id: uuid().defaultRandom().primaryKey(),
-    owner:text().references(()=>user.id),
+    owner:text().references(()=>user.id).notNull(),
     description:text('description'),
     totalAmount:integer().notNull(),
     splitType:text().notNull(),
@@ -27,8 +27,8 @@ export const bill = pgTable('bill', {
 
 export const split = pgTable('split', {
     id: uuid().defaultRandom().primaryKey(),
-    slave:text().references(()=>user.id),
-    expenseId:uuid().references(()=>bill.id),
+    slave:text().references(()=>user.id).notNull(),
+    expenseId:uuid().references(()=>bill.id).notNull(),
     splitAmount:integer().notNull(),
     ...timestamps,
     },

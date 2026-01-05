@@ -28,7 +28,7 @@ export const account = pgTable("account", {
 	scope: text(),
 	password: text(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { mode: 'string' }).notNull(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
 }, (table) => [
 	index("account_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	foreignKey({
@@ -43,7 +43,7 @@ export const session = pgTable("session", {
 	expiresAt: timestamp("expires_at", { mode: 'string' }).notNull(),
 	token: text().notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { mode: 'string' }).notNull(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
 	ipAddress: text("ip_address"),
 	userAgent: text("user_agent"),
 	userId: text("user_id").notNull(),
@@ -63,7 +63,7 @@ export const users = pgTable("users", {
 	email: text().notNull(),
 	hashedPassword: text("hashed_password").notNull(),
 	dob: date(),
-	updatedAt: timestamp("updated_at", { mode: 'string' }),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
 	deletedAt: timestamp("deleted_at", { mode: 'string' }),
 }, (table) => [

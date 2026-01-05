@@ -7,10 +7,13 @@ export class ExpenseService {
   async createBill(id:string,billingObject:dtoTypes["BillDTO"]):Promise<string|null> {
     let mappedData;
     if(billingObject.splitData.splitType == "equal"){
-        mappedData = billingObject.splitData.data.map((val)=>{
+        const count = billingObject.splitData.data.length;
+        const base = Math.floor(billingObject.totalAmount / count);
+        const remainder = billingObject.totalAmount % count;
+        mappedData = billingObject.splitData.data.map((val, index) => {
             return {
-                userId:val.userId,
-                splitAmount:Math.floor(billingObject.totalAmount/billingObject.splitData.data.length)
+                userId: val.userId,
+                splitAmount: base + (index < remainder ? 1 : 0)
             }
         })
         const myBillingObject = {

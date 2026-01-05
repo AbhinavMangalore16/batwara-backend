@@ -5,7 +5,9 @@ import ws from 'ws';
 import * as schema from "./drizzle.schema";
 
 neonConfig.webSocketConstructor = ws;
-
+if (!process.env.PG_DATABASE_URL) {
+  throw new Error('PG_DATABASE_URL environment variable is required');
+}
 const pool = new Pool({ connectionString: process.env.PG_DATABASE_URL });
 export const db = drizzle(pool,{schema})
 

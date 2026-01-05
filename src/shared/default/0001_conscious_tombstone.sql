@@ -1,6 +1,6 @@
 CREATE TABLE "bill" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"owner" text,
+	"owner" text NOT NULL,
 	"description" text,
 	"totalAmount" integer NOT NULL,
 	"splitType" text NOT NULL,

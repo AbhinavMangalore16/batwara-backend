@@ -9,7 +9,7 @@ import expenseRouter from './modules/expenses/api/expense.routes';
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3000", process.env.FRONTEND_URL || ""], 
+    origin: ["http://localhost:3000", process.env.FRONTEND_URL].filter(Boolean), 
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
@@ -18,9 +18,7 @@ app.use(
 app.use(express.json());
 const port = Number(process.env.PORT) || 8000;
 
-app.all("/api/auth/{*any}", toNodeHandler(auth)); //allows better auths predefined rouet paths to actually execute
-
-app.use(express.json());
+app.all("/api/auth/{*any}", toNodeHandler(auth)); //allows better auths predefined route paths to actually execute
 
 app.get('/', (req:Request, res:Response) => {
   res.send('Hello World!')
