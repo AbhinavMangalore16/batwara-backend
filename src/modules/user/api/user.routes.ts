@@ -19,4 +19,9 @@ userRouter.get('/me',authMiddleware, (req:Request,res:Response) => {
 userRouter.patch('/me',authMiddleware, (req:Request,res:Response) => {
     return userController.patchUserDetails(req, res)
 })
+
+userRouter.get('/check',authMiddleware, (req:Request,res:Response) => {
+    return userController.getUserDetails(req, res)
+})
+
 export default userRouter;

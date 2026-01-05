@@ -1,15 +1,21 @@
-import type { UserResponseDTO } from './user-response.dto.js';
-import type { PatchUserDTO } from '../dtos/patch-user.dto';
+import type { GetUserResponseDTO,PatchUserResponseDTO,SearchUserResponseDTO } from './user-response.dto.js';
+import type { PatchUserDTO,SearchUserDTO } from './user-request.dto.js';
 
-import { UserResponseSchema } from '../dtos/user-response.dto.js';
-import { PatchUserSchema } from '../dtos/patch-user.dto.js';
+import { GetUserResponseSchema,PatchUserResponseSchema,SearchUserResponseSchema } from '../dtos/user-response.dto.js';
+import { PatchUserSchema,SearchUserSchema } from './user-request.dto.js';
 
 export type dtoTypes = {
-    UserResponseDTO:UserResponseDTO,
-    PatchUserDTO:PatchUserDTO
+    GetUserResponseDTO:GetUserResponseDTO,
+    PatchUserDTO:PatchUserDTO,
+    SearchUserDTO:SearchUserDTO,
+    PatchUserResponseDTO:PatchUserResponseDTO,
+    SearchUserResponseDTO:SearchUserResponseDTO,
 }
 
 export const Schemas = {
-    UserResponseSchema,
-    PatchUserSchema
+    GetUserResponseSchema,
+    PatchUserSchema,
+    SearchUserSchema,
+    PatchUserResponseSchema,
+    SearchUserResponseSchema
 }
