@@ -35,7 +35,7 @@ export class ExpensePGRepository {
         const splitArrayData = billObject.splitData.map((entry)=>{
             return {
                     slave:entry.userId,
-                    expenseId:res[0]?.id,
+                    expenseId:res[0]?.id ?? "",
                     splitAmount:entry.splitAmount
                 };
         });
