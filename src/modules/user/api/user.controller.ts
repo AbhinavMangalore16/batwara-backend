@@ -13,7 +13,7 @@ export class UserController {
         const result = Schemas.GetUserResponseSchema.parse(responseObject);
         return res.status(201).json(result);
       }
-      else return res.status(404).json({message: "Email not provided in session header"})
+      else return res.status(404).json({message: "Email not found in header"})
     } catch (error) {
       return res.status(400).json({error: error})
     }
@@ -41,7 +41,7 @@ export class UserController {
         const result = Schemas.PatchUserResponseSchema.parse(responseObject);
         return res.status(201).json(result);
       }
-      else return res.status(404).json({message: "ID not provided in session header"})
+      else return res.status(404).json({message: "ID not found in header"})
     } catch (error) {
       return res.status(400).json({error: error})
     }

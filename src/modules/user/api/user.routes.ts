@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { UserController } from './user.controller';
 import { UserService } from '../domain/user.service';
-import { UserPGRepository } from '../repos/user.pg.repo';
+import { UserPGRepository } from '../repos/user.repo';
 import { authMiddleware } from '../../../shared/infra/auth/better-auth.middleware';
 import type {Request,Response} from 'express'
 
