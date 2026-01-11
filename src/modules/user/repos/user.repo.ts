@@ -22,29 +22,24 @@ export class UserPGRepository {
     return null;
   }
 
-  async addFriend(id:string,friendId:string){
-    const driver = graph();
-    let { records, summary } = await driver.executeQuery(`
-						MATCH (p:Person)-[r:FRIENDS_WITH]-(n:Person)
-            FILTER p.id:$userId,n.id:$friendId`,
-						{ userId:id,
-              friendId:friendId
-             }
-					)
-    if(!records){
-      await driver.executeQuery(`
-						CREATE (p:Person)-[r:FRIENDS_WITH]-(n:Person)
-            FILTER p.id:$userId,n.id:$friendId`,
-						{ userId:id,
-              friendId:friendId
-             }
-					)
+  async addFriend(userId: string, friendId: string){
+    if (userId===friendId){
+      throw new Error("User cannot add themeselve as friend!");
     }
-    const res = await db.
-    update(user).
-    set(Schemas.PatchUserSchema.parse(patchUserObject)).
-    where(eq(user.id,id));
-    return null;
+    const driver = graph();
+    const result = await driver.executeQuery(
+      `
+      MATCH (p: Person {id: $userId),
+      MATCH (f: Person {id: $friendId),
+      MERGE (p)-[:FRIENDS_WITH]-(f)
+      RETURN p,f
+      `,{
+        userId, friendId
+      }
+    )
+    if (result.records.length===0){
+      throw new Error("One or both users not found!");
+    }
   }
 
 }
