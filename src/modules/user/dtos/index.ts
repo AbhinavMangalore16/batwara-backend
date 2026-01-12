@@ -1,8 +1,8 @@
-import type { GetUserResponseDTO,PatchUserResponseDTO,SearchUserResponseDTO } from './user-response.dto.js';
-import type { PatchUserDTO,SearchUserDTO } from './user-request.dto.js';
+import type { GetUserResponseDTO,PatchUserResponseDTO,SearchUserResponseDTO,AddFriendResponseDTO } from './user-response.dto.js';
+import type { PatchUserDTO,SearchUserDTO,AddFriendDTO } from './user-request.dto.js';
 
-import { GetUserResponseSchema,PatchUserResponseSchema,SearchUserResponseSchema } from '../dtos/user-response.dto.js';
-import { PatchUserSchema,SearchUserSchema } from './user-request.dto.js';
+import { GetUserResponseSchema,PatchUserResponseSchema,SearchUserResponseSchema,AddFriendResponseSchema } from '../dtos/user-response.dto.js';
+import { PatchUserSchema,SearchUserSchema,AddFriendSchema } from './user-request.dto.js';
 
 export type dtoTypes = {
     GetUserResponseDTO:GetUserResponseDTO,
@@ -10,6 +10,8 @@ export type dtoTypes = {
     SearchUserDTO:SearchUserDTO,
     PatchUserResponseDTO:PatchUserResponseDTO,
     SearchUserResponseDTO:SearchUserResponseDTO,
+    AddFriendDTO:AddFriendDTO
+    AddFriendResponseDTO:AddFriendResponseDTO
 }
 
 export const Schemas = {
@@ -17,5 +19,7 @@ export const Schemas = {
     PatchUserSchema,
     SearchUserSchema,
     PatchUserResponseSchema,
-    SearchUserResponseSchema
+    SearchUserResponseSchema,
+    AddFriendSchema,
+    AddFriendResponseSchema
 }

@@ -18,4 +18,9 @@ export class UserService {
     const res = await this.userRepo.updateUserDetail(id,patchUserObject);
     return res;
   }
+
+  async addFriend(id:string,friendId:string) {
+    const res = await this.userRepo.addFriend(id,friendId);
+    return res;
+  }
 }

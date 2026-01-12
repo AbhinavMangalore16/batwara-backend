@@ -11,3 +11,9 @@ export const SearchUserSchema = z.object({
 })
 
 export type SearchUserDTO = z.infer<typeof SearchUserSchema>;
+
+export const AddFriendSchema = z.object({
+    friendId:z.string({message:"Enter friend id"}),
+})
+
+export type AddFriendDTO = z.infer<typeof AddFriendSchema>;

@@ -1,5 +1,5 @@
 import { db } from '../../../shared/infra/db/postgres/postgres-client.config.js'; // Import your DB client
-import { graph } from '../../../shared/infra/db/neo4j/neo4j-client.config.js
+import { graph } from '../../../shared/infra/db/neo4j/neo4j-client.config.js';
 import type { dtoTypes } from '../dtos/index';
 import { Schemas } from '../dtos/index';
 import { user } from './auth.schema.js';
@@ -39,6 +39,9 @@ export class UserPGRepository {
     )
     if (result.records.length===0){
       throw new Error("One or both users not found!");
+    }
+    return {
+      "message":"success"
     }
   }
 

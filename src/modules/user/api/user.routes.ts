@@ -24,4 +24,8 @@ userRouter.get('/check',authMiddleware, (req:Request,res:Response) => {
     return userController.getUserDetails(req, res)
 })
 
+userRouter.post('/add',authMiddleware, (req:Request,res:Response) => {
+    return userController.addFriend(req, res)
+})
+
 export default userRouter;

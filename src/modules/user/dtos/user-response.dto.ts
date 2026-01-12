@@ -25,3 +25,10 @@ export const SearchUserResponseSchema = z.object({
 })
 
 export type SearchUserResponseDTO = z.infer<typeof SearchUserResponseSchema>;
+
+export const AddFriendResponseSchema = z.object({
+    message:z.enum(["success","failure"]).describe("lady or ladyboy"),
+    error:z.object().optional()
+})
+
+export type AddFriendResponseDTO = z.infer<typeof AddFriendResponseSchema>;

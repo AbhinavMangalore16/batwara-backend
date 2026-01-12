@@ -46,4 +46,18 @@ export class UserController {
       return res.status(400).json({error: error})
     }
   }
+
+  async addFriend(req: Request, res: Response) {
+    try {
+      const id:string | undefined = res.locals.id;
+      if(id){
+        const responseObject = await this.userService.addFriend(id,Schemas.AddFriendSchema.parse(req.body).friendId);
+        const result = Schemas.AddFriendResponseSchema.parse(responseObject);
+        return res.status(201).json(result);
+      }
+      else return res.status(404).json({message: "ID not found in header"})
+    } catch (error) {
+      return res.status(400).json({error: error})
+    }
+  }
 }
