@@ -9,7 +9,10 @@ export const databaseHooks:BetterAuthOptions["databaseHooks"] = {
 					console.log(user,"my user")
 					let { records, summary } = await driver.executeQuery(`
 						CREATE (p:Person {id: $userId})`,
-						{ userId:user.id }
+						{ 
+							userId:user.id,
+							balance:0
+						}
 					)
 					// Summary information
 					console.log(
