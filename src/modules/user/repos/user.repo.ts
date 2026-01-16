@@ -23,6 +23,7 @@ export class UserPGRepository {
   }
 
   async addFriend(userId: string, friendId: string){
+    //TODO-> add behind an event such that handshake happens
     if (userId===friendId){
       throw new Error("User cannot add themeselve as friend!");
     }
@@ -31,7 +32,7 @@ export class UserPGRepository {
       `
       MATCH (p: Person {id: $userId),
       MATCH (f: Person {id: $friendId),
-      MERGE (p)-[:FRIENDS_WITH]-(f)
+      MERGE (p)-[:FRIENDS_WITH{ owes:0 }]->(f)
       RETURN p,f
       `,{
         userId, friendId

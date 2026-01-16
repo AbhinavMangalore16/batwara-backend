@@ -8,7 +8,7 @@ export const databaseHooks:BetterAuthOptions["databaseHooks"] = {
 					const driver = graph();
 					console.log(user,"my user")
 					let { records, summary } = await driver.executeQuery(`
-						CREATE (p:Person {id: $userId})`,
+						CREATE (p:Person {id: $userId,balance: $balance})`,
 						{ 
 							userId:user.id,
 							balance:0

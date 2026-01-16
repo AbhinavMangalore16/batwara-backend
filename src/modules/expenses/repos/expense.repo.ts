@@ -20,6 +20,7 @@ interface billObject{
 
 export class ExpensePGRepository {
   async splitThat(userId:string,billObject:billObject): Promise<returnObject|null>{  //easter egg => https://tinyurl.com/385e4th9
+    let splitArrayData;
     const data:string = await db.transaction(async (tx)=>{
         const res = await tx.
             insert(bill).
@@ -33,29 +34,7 @@ export class ExpensePGRepository {
             tx.rollback();
             throw new Error("userId not defined");
         }
-        const driver = graph();
-        const splitArrayData = billObject.splitData.map(async(entry)=>{
-            
-            const result = await driver.executeQuery(
-            `
-                MATCH (p: Person {id: $userId),
-                SET p.balance = p.balance + $splitAmount
-                RETURN p.id
-                `,{
-                    userId, 
-                    splitAmount:entry.splitAmount
-                }
-            )
-            const result2 = await driver.executeQuery(
-            `
-                MATCH (p: Person {id: $friendId),
-                SET p.balance = p.balance-$splitAmount
-                RETURN p.id
-                `,{
-                    friendId:entry.userId, 
-                    splitAmount:entry.splitAmount
-                }
-            )
+        splitArrayData = billObject.splitData.map((entry)=>{
 
             return {
                     slave:entry.userId,
@@ -68,6 +47,23 @@ export class ExpensePGRepository {
         values(splitArrayData);
         return res[0].id;
     });
+    const driver = graph();
+    const result = await driver.executeQuery(
+      `
+      UNWIND $map as data
+      MATCH (p: Person {id: $userId})-[r:FRIENDS_WITH]-(f: Person {id: data.slave}),
+      SET r.owes =
+        coalesce(r.owes, 0) +
+        CASE
+            WHEN startNode(r) = p THEN data.splitAmount
+            ELSE -data.splitAmount
+        END
+      RETURN p,f
+      `,{
+        map:splitArrayData,
+        userId, 
+      }
+    )
     return {
         transactionId:data
     }
