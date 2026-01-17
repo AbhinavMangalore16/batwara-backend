@@ -51,7 +51,7 @@ export class ExpensePGRepository {
     const result = await driver.executeQuery(
       `
       UNWIND $map as data
-      MATCH (p: Person {id: $userId})-[r:FRIENDS_WITH]-(f: Person {id: data.slave}),
+      MATCH (p: Person {id: $userId})-[r:FRIENDS_WITH]-(f: Person {id: data.slave})
       SET r.owes =
         coalesce(r.owes, 0) +
         CASE
