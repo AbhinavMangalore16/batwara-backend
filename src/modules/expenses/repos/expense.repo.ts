@@ -2,54 +2,54 @@ import { db } from '../../../shared/infra/db/postgres/postgres-client.config.js'
 import { split, bill } from './expense.schema';
 import { graph } from '../../../shared/infra/db/neo4j/neo4j-client.config.js';
 
-interface returnObject{
-    transactionId:string
+interface returnObject {
+    transactionId: string
 }
 
-interface splitObject{
-    userId:string,
-    splitAmount:number
+interface splitObject {
+    userId: string,
+    splitAmount: number
 }
 
-interface billObject{
-    totalAmount:number,
-    description:string,
-    splitType:"equal"|"percentage"|"exact",
-    splitData:splitObject[]
+interface billObject {
+    totalAmount: number,
+    description: string,
+    splitType: "equal" | "percentage" | "exact",
+    splitData: splitObject[]
 }
 
 export class ExpensePGRepository {
-  async splitThat(userId:string,billObject:billObject): Promise<returnObject|null>{  //easter egg => https://tinyurl.com/385e4th9
-    let splitArrayData;
-    const data:string = await db.transaction(async (tx)=>{
-        const res = await tx.
-            insert(bill).
-            values({
-                totalAmount:billObject.totalAmount,
-                owner:userId,
-                description:billObject.description,
-                splitType:billObject.splitType
-            }).returning();
-        if(!res[0] || !res[0].id){
-            tx.rollback();
-            throw new Error("userId not defined");
-        }
-        splitArrayData = billObject.splitData.map((entry)=>{
+    async splitThat(userId: string, billObject: billObject): Promise<returnObject | null> {  //easter egg => https://tinyurl.com/385e4th9
+        let splitArrayData;
+        const data: string = await db.transaction(async (tx) => {
+            const res = await tx.
+                insert(bill).
+                values({
+                    totalAmount: billObject.totalAmount,
+                    owner: userId,
+                    description: billObject.description,
+                    splitType: billObject.splitType
+                }).returning();
+            if (!res[0] || !res[0].id) {
+                tx.rollback();
+                throw new Error("userId not defined");
+            }
+            splitArrayData = billObject.splitData.map((entry) => {
 
-            return {
-                    slave:entry.userId,
-                    expenseId:res[0]?.id ?? "",
-                    splitAmount:entry.splitAmount
+                return {
+                    slave: entry.userId,
+                    expenseId: res[0]?.id ?? "",
+                    splitAmount: entry.splitAmount
                 };
+            });
+            await tx.
+                insert(split).
+                values(splitArrayData);
+            return res[0].id;
         });
-        await tx.
-        insert(split).
-        values(splitArrayData);
-        return res[0].id;
-    });
-    const driver = graph();
-    const result = await driver.executeQuery(
-      `
+        const driver = graph();
+        const result = await driver.executeQuery(
+            `
       UNWIND $map as data
       MATCH (p: Person {id: $userId})-[r:FRIENDS_WITH]-(f: Person {id: data.slave})
       SET r.owes =
@@ -59,14 +59,29 @@ export class ExpensePGRepository {
             ELSE -data.splitAmount
         END
       RETURN p,f
-      `,{
-        map:splitArrayData,
-        userId, 
-      }
-    )
-    return {
-        transactionId:data
+      `, {
+            map: splitArrayData,
+            userId,
+        }
+        )
+        return {
+            transactionId: data
+        }
     }
-  }
-
+    async validAllFriends(userId: string, restIds: string[]): Promise<boolean> {
+        const driver = graph();
+        const result = await driver.executeQuery(
+            `
+        MATCH (p: Person {id: $userId})
+        WHERE ALL(fid in $restIds WHERE fid=p.id OR
+        EXISTS{
+        MATCH (p)-[:FRIENDS_WITH]-(f: Person {id: fid})
+            }
+        )
+        RETURN true as allFriends
+        `,
+            { userId, restIds }
+        );
+        return result.records.length > 0 && result.records[0]?.get('allFriends') === true;
+    }
 }

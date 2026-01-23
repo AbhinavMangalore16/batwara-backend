@@ -27,6 +27,12 @@ app.get('/', (req:Request, res:Response) => {
 app.use("/api/users/",userRouter);
 app.use("/api/expenses/",expenseRouter);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+// Export app for testing
+export { app };
+
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+  })
+}
