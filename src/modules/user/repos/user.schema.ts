@@ -1,4 +1,4 @@
-import { pgTable, date, uuid, text, timestamp, index, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, date, uuid, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
 // columns.helpers.ts
 const timestamps = {
