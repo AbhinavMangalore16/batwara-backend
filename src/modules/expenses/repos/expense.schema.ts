@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, integer, check, index } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, timestamp, integer, check, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { sql } from "drizzle-orm";
 import { user } from '../../user/repos/auth.schema';
 import { table } from 'console';
@@ -43,3 +43,16 @@ export const split = pgTable('split', {
       index("split_created_at_idx").on(table.created_at)
     ]
 );
+
+export const settlement = pgTable('settlement', {
+  id: uuid().defaultRandom().primaryKey(),
+  from: text().references(()=>user.id).notNull(),
+  to: text().references(()=>user.id).notNull(),
+  amount: integer().notNull(),
+  ...timestamps,
+},(table)=>[
+  index("settlement_from_idx").on(table.from),
+  index("settlement_to_idx").on(table.to),
+  index("settlement_created_at_idx").on(table.created_at),
+  uniqueIndex("settlement_from_to_idx").on(table.from, table.to)
+]);

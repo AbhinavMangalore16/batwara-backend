@@ -22,6 +22,13 @@
       "when": 1769188263432,
       "tag": "0002_right_triathlon",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769284782195,
+      "tag": "0003_bitter_big_bertha",
+      "breakpoints": true
     }
   ]
 }

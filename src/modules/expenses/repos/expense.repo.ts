@@ -35,7 +35,6 @@ export class ExpensePGRepository {
                 throw new Error("userId not defined");
             }
             splitArrayData = billObject.splitData.map((entry) => {
-
                 return {
                     slave: entry.userId,
                     expenseId: res[0]?.id ?? "",
@@ -50,15 +49,24 @@ export class ExpensePGRepository {
         const driver = graph();
         const result = await driver.executeQuery(
             `
-      UNWIND $map as data
-      MATCH (p: Person {id: $userId})-[r:FRIENDS_WITH]-(f: Person {id: data.slave})
-      SET r.owes =
-        coalesce(r.owes, 0) +
-        CASE
-            WHEN startNode(r) = p THEN data.splitAmount
-            ELSE -data.splitAmount
-        END
-      RETURN p,f
+            UNWIND $map AS data
+            MATCH (p:Person {id: $userId})
+            MATCH (f:Person {id: data.slave})
+            OPTIONAL MATCH (p)-[r1:OWES]->(f)
+            OPTIONAL MATCH (f)-[r2:OWES]->(p)
+            WITH p, f, data, r1, r2, coalesce(r1.amount, 0) - coalesce(r2.amount, 0) + data.splitAmount AS net
+
+            FOREACH (ig IN CASE WHEN r1 IS NOT NULL THEN [1] ELSE [] END | DELETE r1)
+            FOREACH (ig IN CASE WHEN r2 IS NOT NULL THEN [1] ELSE [] END | DELETE r2)
+
+            FOREACH (ig IN CASE WHEN net >0 THEN [1] ELSE [] END | 
+                CREATE (p)-[:OWES {amount: net}]->(f)
+            )
+            FOREACH (ig IN CASE WHEN net < 0 THEN [1] ELSE [] END |
+                CREATE (f)-[:OWES {amount: -net}]->(p)
+            )
+            RETURN p.id AS from, f.id AS to, net
+
       `, {
             map: splitArrayData,
             userId,
@@ -82,6 +90,6 @@ export class ExpensePGRepository {
         `,
             { userId, restIds }
         );
-        return result.records.length > 0 && result.records[0]?.get('allFriends') === true;
+        return result.records[0]?.get('allFriends') === true;
     }
 }
