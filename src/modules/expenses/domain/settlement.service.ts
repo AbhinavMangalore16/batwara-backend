@@ -11,7 +11,7 @@ export interface Settlement{
     amount: number;
 }
 
-export class SettlementService{
+export class SettlementOptimizer{
     optimizeSettlements(balances: Record<string, number>): Settlement[] {
         const gainers = new Heap<HNode>((x,y)=> y.amount-x.amount);
         const losers = new Heap<HNode>((x,y)=> x.amount-y.amount);

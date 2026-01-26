@@ -1,6 +1,8 @@
 import { db } from '../../../shared/infra/db/postgres/postgres-client.config.js'; // Import your DB client
 import { split, bill } from './expense.schema';
 import { graph } from '../../../shared/infra/db/neo4j/neo4j-client.config.js';
+import { neo4JSettlementService } from '../domain/balance-neo4j.service.js';
+import { SettlementOptimizer } from '../domain/settlement.service.js';
 
 interface returnObject {
     transactionId: string
@@ -92,4 +94,5 @@ export class ExpensePGRepository {
         );
         return result.records[0]?.get('allFriends') === true;
     }
+
 }
