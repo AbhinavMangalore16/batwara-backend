@@ -1,0 +1,91 @@
+CREATE TABLE "account" (
+	"id" text PRIMARY KEY NOT NULL,
+	"account_id" text NOT NULL,
+	"provider_id" text NOT NULL,
+	"user_id" text NOT NULL,
+	"access_token" text,
+	"refresh_token" text,
+	"id_token" text,
+	"access_token_expires_at" timestamp,
+	"refresh_token_expires_at" timestamp,
+	"scope" text,
+	"password" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "bill" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"owner" text NOT NULL,
+	"description" text,
+	"totalAmount" integer NOT NULL,
+	"splitType" text NOT NULL,
+	"updated_at" timestamp,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	CONSTRAINT "split_type_check1" CHECK ("bill"."splitType" in ('equal','percentage','exact'))
+);
+--> statement-breakpoint
+CREATE TABLE "session" (
+	"id" text PRIMARY KEY NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"token" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp NOT NULL,
+	"ip_address" text,
+	"user_agent" text,
+	"user_id" text NOT NULL,
+	CONSTRAINT "session_token_unique" UNIQUE("token")
+);
+--> statement-breakpoint
+CREATE TABLE "settlement" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"from" text NOT NULL,
+	"to" text NOT NULL,
+	"amount" integer NOT NULL,
+	"updated_at" timestamp,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "split" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"slave" text NOT NULL,
+	"expenseId" uuid NOT NULL,
+	"splitAmount" integer NOT NULL,
+	"updated_at" timestamp,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "user" (
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"email" text NOT NULL,
+	"email_verified" boolean DEFAULT false NOT NULL,
+	"image" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "user_email_unique" UNIQUE("email")
+);
+--> statement-breakpoint
+ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "bill" ADD CONSTRAINT "bill_owner_user_id_fk" FOREIGN KEY ("owner") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "settlement" ADD CONSTRAINT "settlement_from_user_id_fk" FOREIGN KEY ("from") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "settlement" ADD CONSTRAINT "settlement_to_user_id_fk" FOREIGN KEY ("to") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "split" ADD CONSTRAINT "split_slave_user_id_fk" FOREIGN KEY ("slave") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "split" ADD CONSTRAINT "split_expenseId_bill_id_fk" FOREIGN KEY ("expenseId") REFERENCES "public"."bill"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "bill_owner_idx" ON "bill" USING btree ("owner");--> statement-breakpoint
+CREATE INDEX "bill_created_at_idx" ON "bill" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "bill_owner_createdat_idx" ON "bill" USING btree ("owner","created_at");--> statement-breakpoint
+CREATE INDEX "session_userId_idx" ON "session" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "settlement_from_idx" ON "settlement" USING btree ("from");--> statement-breakpoint
+CREATE INDEX "settlement_to_idx" ON "settlement" USING btree ("to");--> statement-breakpoint
+CREATE INDEX "settlement_created_at_idx" ON "settlement" USING btree ("created_at");--> statement-breakpoint
+CREATE UNIQUE INDEX "settlement_from_to_idx" ON "settlement" USING btree ("from","to");--> statement-breakpoint
+CREATE INDEX "split_slave_idx" ON "split" USING btree ("slave");--> statement-breakpoint
+CREATE INDEX "split_expenseid_idx" ON "split" USING btree ("expenseId");--> statement-breakpoint
+CREATE INDEX "split_expense_slave_idx" ON "split" USING btree ("expenseId","slave");--> statement-breakpoint
+CREATE INDEX "split_created_at_idx" ON "split" USING btree ("created_at");

@@ -52,22 +52,23 @@ export class ExpensePGRepository {
         const result = await driver.executeQuery(
             `
             UNWIND $map AS data
-            MATCH (p:Person {id: $userId})
-            MATCH (f:Person {id: data.slave})
-            OPTIONAL MATCH (p)-[r1:OWES]->(f)
-            OPTIONAL MATCH (f)-[r2:OWES]->(p)
-            WITH p, f, data, r1, r2, coalesce(r1.amount, 0) - coalesce(r2.amount, 0) + data.splitAmount AS net
+            MATCH (payer:Person {id: $userId})
+            MATCH (debtor:Person {id: data.slave})
+            
+            OPTIONAL MATCH (debtor)-[r1:OWES]->(payer)
+            OPTIONAL MATCH (payer)-[r2:OWES]->(debtor)
+            WITH payer, debtor, data, r1, r2, coalesce(r1.amount, 0) - coalesce(r2.amount, 0) + data.splitAmount AS net
 
             FOREACH (ig IN CASE WHEN r1 IS NOT NULL THEN [1] ELSE [] END | DELETE r1)
             FOREACH (ig IN CASE WHEN r2 IS NOT NULL THEN [1] ELSE [] END | DELETE r2)
 
-            FOREACH (ig IN CASE WHEN net >0 THEN [1] ELSE [] END | 
-                CREATE (p)-[:OWES {amount: net}]->(f)
+            FOREACH (ig IN CASE WHEN net > 0 THEN [1] ELSE [] END | 
+                CREATE (debtor)-[:OWES {amount: net}]->(payer)
             )
             FOREACH (ig IN CASE WHEN net < 0 THEN [1] ELSE [] END |
-                CREATE (f)-[:OWES {amount: -net}]->(p)
+                CREATE (payer)-[:OWES {amount: -net}]->(debtor)
             )
-            RETURN p.id AS from, f.id AS to, net
+            RETURN payer.id AS to, debtor.id AS from, net
 
       `, {
             map: splitArrayData,

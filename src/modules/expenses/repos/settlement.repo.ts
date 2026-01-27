@@ -3,7 +3,7 @@ import { neo4JSettlementService } from '../domain/balance-neo4j.service';
 import { SettlementOptimizer } from '../domain/settlement.service';
 
 
-interface Settle {
+export interface Settle {
     owesTo: Array<{ to: string; amount: number }>;
     receivesFrom: Array<{ from: string; amount: number }>;
 }

@@ -1,5 +1,5 @@
 import { defineConfig } from 'drizzle-kit';
-
+console.log("DATABASE_URL =", process.env.PG_DATABASE_URL);
 if (!process.env.PG_DATABASE_URL) {
   throw new Error('PG_DATABASE_URL is not set in the .env file');
 }

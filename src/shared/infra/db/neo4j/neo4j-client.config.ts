@@ -3,6 +3,7 @@ import neo4j,{Driver} from "neo4j-driver"
 const URI = process.env.NEO4J_URI;
 const USER = process.env.NEO4J_USER;
 const PASSWORD = process.env.NEO4J_PASSWORD;
+console.log(URI, USER, PASSWORD);
 if(!URI || !USER || !PASSWORD){
   throw new Error("env vars not defined for neo4j");
 }

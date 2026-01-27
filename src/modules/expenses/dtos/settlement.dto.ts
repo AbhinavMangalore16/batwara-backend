@@ -1,9 +1,9 @@
 import {z} from "zod";
 
 export const SettlementSchema = z.object({
-    id: z.string().uuid(),
-    from: z.string().uuid(),
-    to: z.string().uuid(),
+    id: z.uuid(),
+    from: z.uuid(),
+    to: z.uuid(),
     amount: z.number().int().nonnegative(),
     created_at: z.date(),
     updated_at: z.date().optional(),
@@ -11,18 +11,18 @@ export const SettlementSchema = z.object({
 })
 
 export const SettlementResponseSchema = z.object({
-    from: z.string().uuid(),
-    to: z.string().uuid(),
+    from: z.uuid(),
+    to: z.uuid(),
     amount: z.number().int().nonnegative()
 })
 
 export const UserSettlementResponseSchema = z.object({
     owesTo: z.array(z.object({
-        to: z.string().uuid(),
+        to: z.uuid(),
         amount: z.number().int().nonnegative(),
     })),
     receivesFrom: z.array(z.object({
-        from: z.string().uuid(),
+        from: z.uuid(),
         amount: z.number().int().nonnegative()
     }))
 })

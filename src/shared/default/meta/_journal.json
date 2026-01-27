@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1767515297213,
-      "tag": "0000_clever_justice",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1767515305213,
-      "tag": "0001_conscious_tombstone",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1769188263432,
-      "tag": "0002_right_triathlon",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1769284782195,
-      "tag": "0003_bitter_big_bertha",
+      "when": 1769446669572,
+      "tag": "0000_ambitious_demogoblin",
       "breakpoints": true
     }
   ]
