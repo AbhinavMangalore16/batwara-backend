@@ -23,4 +23,9 @@ export class UserService {
     const res = await this.userRepo.addFriend(id,friendId);
     return res;
   }
+
+  async searchFriend(id: string){
+    const res = await this.userRepo.searchFriends(id);
+    return res;
+  }
 }

@@ -28,4 +28,8 @@ userRouter.post('/add',authMiddleware, (req:Request,res:Response) => {
     return userController.addFriend(req, res)
 })
 
+userRouter.get('/friends', authMiddleware, (req: Request, res: Response) => {
+    return userController.searchFriend(req, res);
+});
+
 export default userRouter;

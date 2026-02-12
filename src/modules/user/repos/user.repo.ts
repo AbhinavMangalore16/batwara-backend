@@ -45,5 +45,19 @@ export class UserPGRepository {
       "message":"success"
     }
   }
-
+  async searchFriends(userId: string){
+    const driver = graph();
+    const result = await driver.executeQuery(
+      `
+      MATCH (p: Person {id: $userId})- [:FRIENDS_WITH]-(f:Person)
+      RETURN f
+      `,
+      {userId}
+    );
+  const friends = result.records.map((record)=>{
+    const friendNode = record.get('f');
+    return friendNode.properties;
+  });
+  return friends;
+  }
 }

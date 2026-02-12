@@ -20,7 +20,7 @@ export type PatchUserResponseDTO = z.infer<typeof PatchUserResponseSchema>;
 
 export const SearchUserResponseSchema = z.object({
     message:z.enum(["success","failure"]).describe("lady or ladyboy"),
-    id:z.number().describe("user id"), 
+    id:z.string().describe("user id"), 
     error:z.object().optional()
 })
 
@@ -32,3 +32,18 @@ export const AddFriendResponseSchema = z.object({
 })
 
 export type AddFriendResponseDTO = z.infer<typeof AddFriendResponseSchema>;
+
+export const SearchFriendResponseSchema = z.object({
+    message: z.enum(["success", "failure"]),
+    friends: z.array(
+        z.object({
+            id: z.string(), 
+            name: z.string(),
+            email: z.email(),
+            image: z.string().nullable().optional()
+        })
+    ).optional(), 
+    error: z.any().optional()
+})
+
+export type SearchFriendResponseDTO = z.infer<typeof SearchFriendResponseSchema>

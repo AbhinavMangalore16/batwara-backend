@@ -60,4 +60,21 @@ export class UserController {
       return res.status(400).json({error: error})
     }
   }
+
+  async searchFriend(req: Request, res: Response){
+    try{
+      const id: string | undefined = res.locals.id;
+      if(id){
+        const friendsList = await this.userService.searchFriend(id);
+        return res.status(200).json({friends: friendsList});
+      }
+      else{
+        return res.status(404).json({message: "ID not found in header"});
+      }
+    }
+    catch(error){
+      return res.status(400).json({error: error})
+    }
+  }
+
 }

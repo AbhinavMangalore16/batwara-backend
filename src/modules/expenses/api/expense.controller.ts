@@ -93,7 +93,7 @@ export class ExpenseController {
   async markSettlementPaid(req: Request, res: Response) {
     try {
       const id: string | undefined = res.locals.id;
-      const settlementId: string = req.params.settlementId;
+      const settlementId: any = req.params.settlementId;
       if (!settlementId || typeof settlementId !== 'string') {
         throw new Error('Invalid settlementId');
     }
