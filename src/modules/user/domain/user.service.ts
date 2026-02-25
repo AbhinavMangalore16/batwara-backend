@@ -19,8 +19,13 @@ export class UserService {
     return res;
   }
 
-  async addFriend(id:string,friendId:string) {
-    const res = await this.userRepo.addFriend(id,friendId);
+  async makeFriendRequest(id:string,friendId:string) {
+    const res = await this.userRepo.makeFriendRequest(id,friendId);
+    return res;
+  }
+
+  async acceptFriendRequest(id:string,friendId:string,accepted:boolean) {
+    const res = await this.userRepo.acceptFriendRequest(id,friendId,accepted);
     return res;
   }
 }

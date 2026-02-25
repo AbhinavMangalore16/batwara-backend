@@ -22,9 +22,9 @@ export class UserPGRepository {
     return null;
   }
 
-  async addFriend(userId: string, friendId: string){
+  async makeFriendRequest(userId: string, friendId: string){
     
-    if (userId===friendId){
+    if (userId==friendId){
       throw new Error("User cannot add themeselve as friend!");
     }
     const driver = graph();
@@ -32,15 +32,42 @@ export class UserPGRepository {
       `
       MATCH (p: Person {id: $userId})
       MATCH (f: Person {id: $friendId})
-      MERGE (p)-[:FRIENDS_WITH{ owes:0 }]->(f)
+      MERGE (p)-[:PENDING_FRIEND_REQUEST]->(f)
       RETURN p,f
       `,{
         userId, friendId
       }
     )
-    console.log(result)
     if (result.records.length===0){
       throw new Error("One or both users not found!");
+    }
+    return {
+      "message":"success"
+    }
+  }
+
+  async acceptFriendRequest(userId: string, friendId: string, accepted: boolean){
+    
+    if (userId===friendId){
+      throw new Error("User cannot add themeselve as friend!");
+    }
+    const driver = graph();
+    const result = await driver.executeQuery(
+      `
+      MATCH (f:Person {id: $friendId})-[rel:PENDING_FRIEND_REQUEST]->(p:Person {id: $userId})
+      DELETE rel
+      FOREACH (_ IN CASE WHEN $accepted = true THEN [1] ELSE [] END |
+        MERGE (p)-[:FRIEND { owes: 0 }]->(f)
+      )
+      RETURN p, f
+
+      `,{
+        userId, friendId,accepted
+      }
+    )
+    console.log(result)
+    if (result.records.length===0){
+      throw new Error("One or both users or friend request not found!");
     }
     return {
       "message":"success"

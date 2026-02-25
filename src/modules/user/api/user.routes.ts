@@ -24,8 +24,12 @@ userRouter.get('/check',authMiddleware, (req:Request,res:Response) => {  //check
     return userController.checkUserExists(req, res)
 })
 
-userRouter.post('/add',authMiddleware, (req:Request,res:Response) => {  //add a new friend node edge
-    return userController.addFriend(req, res)
+userRouter.post('/friend',authMiddleware, (req:Request,res:Response) => {  //add a new friend request node edge
+    return userController.makeFriendRequest(req, res)
+})
+
+userRouter.patch('/friend',authMiddleware, (req:Request,res:Response) => {  //accept/reject a new friend request node edge
+    return userController.acceptFriendRequest(req, res)
 })
 
 export default userRouter;

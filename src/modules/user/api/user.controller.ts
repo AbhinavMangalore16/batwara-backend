@@ -51,11 +51,29 @@ export class UserController {
     }
   }
 
-  async addFriend(req: Request, res: Response) {
+  async makeFriendRequest(req: Request, res: Response) {
     try {
       const id:string | undefined = res.locals.id;
       if(id){
-        const responseObject = await this.userService.addFriend(id,Schemas.AddFriendSchema.parse(req.body).friendId);
+        const responseObject = await this.userService.makeFriendRequest(id,Schemas.AddFriendSchema.parse(req.body).friendId);
+        const result = Schemas.AddFriendResponseSchema.parse(responseObject);
+        return res.status(201).json(result);
+      }
+      else return res.status(404).json({message: "ID not found in header"})
+    } catch (error: any) {
+
+      return res.status(400).json({ 
+        error: error.message || "An unknown error occurred" 
+      });
+    }
+  }
+
+  async acceptFriendRequest(req: Request, res: Response) {
+    try {
+      const id:string | undefined = res.locals.id;
+      const action:boolean  = req.body;
+      if(id){
+        const responseObject = await this.userService.acceptFriendRequest(id,Schemas.AddFriendSchema.parse(req.body).friendId,action);
         const result = Schemas.AddFriendResponseSchema.parse(responseObject);
         return res.status(201).json(result);
       }
