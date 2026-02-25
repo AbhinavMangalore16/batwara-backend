@@ -23,8 +23,7 @@ export class UserPGRepository {
   }
 
   async addFriend(userId: string, friendId: string){
-    //TODO-> add behind an event such that handshake happens
-    console.log(userId,friendId,"fuddu")
+    
     if (userId===friendId){
       throw new Error("User cannot add themeselve as friend!");
     }

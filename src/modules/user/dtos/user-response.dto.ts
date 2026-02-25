@@ -19,8 +19,10 @@ export const PatchUserResponseSchema = z.object({
 export type PatchUserResponseDTO = z.infer<typeof PatchUserResponseSchema>;
 
 export const SearchUserResponseSchema = z.object({
-    message:z.enum(["success","failure"]).describe("lady or ladyboy"),
-    id:z.number().describe("user id"), 
+    id:z.string().optional().describe("user id"), 
+    name:z.string().optional().describe("user name"),
+    email:z.string().optional().describe("users email"),
+    image:z.string().nullable().optional().describe("user profile image string url"),
     error:z.object().optional()
 })
 

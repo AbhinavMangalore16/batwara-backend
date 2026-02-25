@@ -9,9 +9,9 @@ export class UserService {
     return (res?res:null);
   }
 
-  async checkUserExists(email:string):Promise<string|null> {
+  async checkUserExists(email:string) {
     const res = await this.userRepo.findByEmail(email);
-    return (res?res.id:null);
+    return (res?res:null);
   }
 
   async patchUserProfile(id:string,patchUserObject:dtoTypes["PatchUserDTO"]) {

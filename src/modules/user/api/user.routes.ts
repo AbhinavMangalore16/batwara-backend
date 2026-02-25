@@ -12,19 +12,19 @@ const userService = new UserService(userRepo);
 const userController = new UserController(userService);
 
 // Define the route
-userRouter.get('/me',authMiddleware, (req:Request,res:Response) => {
+userRouter.get('/me',authMiddleware, (req:Request,res:Response) => { //get my own details
     return userController.getUserDetails(req, res)
 })
 
-userRouter.patch('/me',authMiddleware, (req:Request,res:Response) => {
+userRouter.patch('/me',authMiddleware, (req:Request,res:Response) => { //update my info
     return userController.patchUserDetails(req, res)
 })
 
-userRouter.get('/check',authMiddleware, (req:Request,res:Response) => {
-    return userController.getUserDetails(req, res)
+userRouter.get('/check',authMiddleware, (req:Request,res:Response) => {  //check user exists on email(friend search)
+    return userController.checkUserExists(req, res)
 })
 
-userRouter.post('/add',authMiddleware, (req:Request,res:Response) => {
+userRouter.post('/add',authMiddleware, (req:Request,res:Response) => {  //add a new friend node edge
     return userController.addFriend(req, res)
 })
 

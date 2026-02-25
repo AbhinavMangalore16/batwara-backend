@@ -21,10 +21,14 @@ export class UserController {
 
   async checkUserExists(req: Request, res: Response) {
     try {
+      console.log(req.query,"uigytfdrx");
       const email:string | undefined = Schemas.SearchUserSchema.parse(req.query).email;
+      
       if(email){
         const responseObject = await this.userService.checkUserExists(email);
+        console.log(responseObject,"lkojihguyftdrs");
         const result = Schemas.SearchUserResponseSchema.parse(responseObject);
+        console.log(result,"kjihuygtdr");
         return res.status(201).json(result);
       }
       else return res.status(404).json({message: "Email not provided in query parameter"})
