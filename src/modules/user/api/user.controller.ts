@@ -77,4 +77,18 @@ export class UserController {
     }
   }
 
+  async searchUsers(req: Request, res: Response){
+    try{
+      const nameQuery = req.query.name;
+      if(!nameQuery || typeof nameQuery !== 'string'){
+        return res.status(400).json({message: 'Missing or invalid name query parameter'});
+      }
+      const users = await this.userService.searchUsers(nameQuery);
+      return res.status(200).json({ users });
+    }
+    catch(error){
+      return res.status(400).json({error: error})
+    }
+  }
+
 }

@@ -3,7 +3,7 @@ import { graph } from '../../../shared/infra/db/neo4j/neo4j-client.config.js';
 import type { dtoTypes } from '../dtos/index';
 import { Schemas } from '../dtos/index';
 import { user } from './auth.schema.js';
-import { eq } from "drizzle-orm"
+import { eq, ilike, inArray } from "drizzle-orm"
 
 export class UserPGRepository {
   async findByEmail(email: string){
@@ -25,7 +25,7 @@ export class UserPGRepository {
   async addFriend(userId: string, friendId: string){
     //TODO-> add behind an event such that handshake happens
     if (userId===friendId){
-      throw new Error("User cannot add themeselve as friend!");
+      throw new Error("User cannot add themeselves as friend!");
     }
     const driver = graph();
     const result = await driver.executeQuery(
@@ -45,19 +45,53 @@ export class UserPGRepository {
       "message":"success"
     }
   }
-  async searchFriends(userId: string){
+  async searchFriends(userId: string) {
     const driver = graph();
+
     const result = await driver.executeQuery(
       `
-      MATCH (p: Person {id: $userId})- [:FRIENDS_WITH]-(f:Person)
-      RETURN f
+      MATCH (p:Person {id:$userId})-[:FRIENDS_WITH]-(f:Person)
+      RETURN f.id AS id
       `,
-      {userId}
+      { userId }
     );
-  const friends = result.records.map((record)=>{
-    const friendNode = record.get('f');
-    return friendNode.properties;
-  });
-  return friends;
+
+    const friendIds = result.records.map((r) => r.get("id"));
+
+    if (friendIds.length === 0) {
+      return [];
+    }
+
+    const friends = await db
+      .select({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.image
+      })
+      .from(user)
+      .where(inArray(user.id, friendIds));
+
+    return friends;
+  }
+
+  async findByName(email: string){
+  const result = await db
+    .select()
+    .from(user)
+    .where(ilike(user.email, `%${email}%`))
+    .limit(20);
+
+  return result;
+  
+}
+  async getUsersByIds(ids: string[]) {
+      return await db
+          .select({
+          id: user.id,
+          name: user.name,
+          })
+          .from(user)
+          .where(inArray(user.id, ids));
   }
 }

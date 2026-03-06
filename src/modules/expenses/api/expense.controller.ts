@@ -31,7 +31,7 @@ export class ExpenseController {
 
   async getUserSettlements(req: Request, res: Response) {
     try {
-      const userId: string | undefined = req.params.userId || res.locals.id;
+      const userId: string | undefined = res.locals.id;
       if (!userId) {
         return res.status(404).json({ message: 'User ID not found' });
       }
@@ -55,15 +55,18 @@ export class ExpenseController {
 
   async getUserBalance(req: Request, res: Response) {
     try {
-      const userId: string | undefined = req.params.userId || res.locals.id;
+      const userId = res.locals.id; // 👈 always use auth
+
       if (!userId) {
-        return res.status(404).json({ message: 'User ID not found' });
+        return res.status(401).json({ message: 'Unauthorized' });
       }
-      const balance = await this.expenseService.getBalances(userId);
-      return res.status(200).json({ balance });
+
+      const balances = await this.expenseService.getBalances(userId);
+
+      return res.status(200).json(balances); // 👈 return directly
     } catch (error) {
       console.log(error);
-      return res.status(400).json({ error });
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 
@@ -104,6 +107,40 @@ export class ExpenseController {
       return res.status(200).json({ message: 'Settlement marked as paid', result });
     } catch (error) {
       console.log(error);
+      return res.status(400).json({ error });
+    }
+  }
+
+  async getFriendDetails(req: Request, res: Response) {
+    try {
+      const userId: string | undefined = res.locals.id;
+      const friendId: string | undefined = req.params.friendId;
+      if (!userId) {
+        return res.status(404).json({ message: 'User ID not found in header' });
+      }
+      if (!friendId) {
+        return res.status(400).json({ message: 'Friend ID not provided' });
+      }
+      const details = await this.expenseService.getFriendDetails(userId, friendId);
+      return res.status(200).json(details);
+    } catch (error) {
+      console.error(error);
+      return res.status(400).json({ error });
+    }
+  }
+  
+
+  async getDashboardChartData(req: Request, res: Response) {
+    try {
+      const userId: string | undefined = res.locals.id;
+      const period = (req.query.period as 'day' | 'week' | 'month' | 'year') || 'month';
+      if (!userId) {
+        return res.status(404).json({ message: 'User ID not found in header' });
+      }
+      const chartData = await this.expenseService.getDashboardChartData(userId, period);
+      return res.status(200).json(chartData);
+    } catch (error) {
+      console.error(error);
       return res.status(400).json({ error });
     }
   }

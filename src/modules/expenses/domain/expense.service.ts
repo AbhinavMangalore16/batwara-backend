@@ -2,10 +2,18 @@ import { ExpensePGRepository } from "../repos/expense.repo";
 import { SettlementNeo4jRepository, Settlement } from "../repos/settlement.repo";
 import { dtoTypes } from "../dtos";
 import { eq } from "drizzle-orm";
+import { UserPGRepository } from "../../user/repos/user.repo";
 
 export class ExpenseService {
-  private settlementRepo = new SettlementNeo4jRepository();
-  constructor(private expenseRepo: ExpensePGRepository) {}
+  private settlementRepo: SettlementNeo4jRepository;
+
+  constructor(
+    private expenseRepo: ExpensePGRepository,
+    settlementRepo?: SettlementNeo4jRepository
+  ) {
+      this.settlementRepo =
+    settlementRepo ?? new SettlementNeo4jRepository(new UserPGRepository());
+  }
 
   private calculateSplitAmounts(
     totalAmount: number,
@@ -100,6 +108,7 @@ export class ExpenseService {
     
     return balances;
   }
+  
 
   async getOptimizedSettlements() {
     const balanceService = new (await import("../domain/balance-neo4j.service.js")).neo4JSettlementService();
@@ -142,5 +151,28 @@ export class ExpenseService {
       console.error("Error marking settlement as paid:", error);
       throw error;
     }
+  }
+  async getFriendDetails(userId: string, friendId: string) {
+    const history = await this.expenseRepo.getFriendTransactions(userId, friendId);
+
+    const raw = await this.settlementRepo.getUserSettlements(userId);
+    const owesTo = raw?.owesTo ?? [];
+    const receivesFrom = raw?.receivesFrom ?? [];
+    const allSettlements = [...owesTo, ...receivesFrom];
+    const directSettlements = allSettlements.filter(
+      (s: any) =>
+        (s.to === friendId && s.from === userId) ||
+        (s.from === friendId && s.to === userId)
+    );
+
+    return {
+      friendId,
+      history,
+      activeSettlements: directSettlements,
+    };
+  }
+
+  async getDashboardChartData(userId: string, period: 'day' | 'week' | 'month' | 'year') {
+      return await this.expenseRepo.getChartData(userId, period);
   }
 }

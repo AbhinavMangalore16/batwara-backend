@@ -4,21 +4,39 @@ import { db } from "../db/postgres/postgres-client.config"; // your drizzle inst
 import { databaseHooks } from "./better-auth.database-hooks";
 // import { hooks } from "./better-auth.hooks";
 
-export const auth = betterAuth({
+    export const auth = betterAuth({
     appName: "batwaara",
+
     database: drizzleAdapter(db, {
-        provider: "pg", // or "mysql", "sqlite"
+        provider: "pg",
     }),
-    trustedOrigins: ["http://localhost:3000", "https://localhost:8000", process.env.FRONTEND_URL || ""],
-    emailAndPassword: { 
-        enabled: true, 
-    }, 
+
+    trustedOrigins: [
+    "http://localhost:3000",
+    "https://batwara-eosin.vercel.app",
+    ],
+
+    emailAndPassword: {
+        enabled: true,
+    },
+
+    advanced: {
+        cookies: {
+        sessionToken: {
+            attributes: {
+            sameSite: "none",
+            secure: true,
+            },
+        },
+        },
+    },
+
     databaseHooks,
-    //hooks,
-    socialProviders: { 
-        github: { 
-            clientId: process.env.GITHUB_CLIENT_ID as string, 
-            clientSecret: process.env.GITHUB_CLIENT_SECRET as string, 
-        }, 
-    }, 
-});
+
+    socialProviders: {
+        github: {
+        clientId: process.env.GITHUB_CLIENT_ID as string,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+        },
+    },
+    });

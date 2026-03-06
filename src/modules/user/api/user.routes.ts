@@ -32,4 +32,9 @@ userRouter.get('/friends', authMiddleware, (req: Request, res: Response) => {
     return userController.searchFriend(req, res);
 });
 
+// Search users by name: GET /users/search?name=...
+userRouter.get('/search', authMiddleware, (req: Request, res: Response) => {
+    return userController.searchUsers(req, res);
+});
+
 export default userRouter;

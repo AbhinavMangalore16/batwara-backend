@@ -1,6 +1,7 @@
 import { db } from '../../../shared/infra/db/postgres/postgres-client.config.js'; // Import your DB client
 import { split, bill } from './expense.schema';
 import { graph } from '../../../shared/infra/db/neo4j/neo4j-client.config.js';
+import { and, or, eq, desc, sql } from 'drizzle-orm';
 import { neo4JSettlementService } from '../domain/balance-neo4j.service.js';
 import { SettlementOptimizer } from '../domain/settlement.service.js';
 
@@ -95,5 +96,57 @@ export class ExpensePGRepository {
         );
         return result.records[0]?.get('allFriends') === true;
     }
+    async getFriendTransactions(userId: string, friendId: string) {
+      return await db.select({
+          billId: bill.id,
+          description: bill.description,
+          totalBillAmount: bill.totalAmount,
+          splitAmount: split.splitAmount,
+          paidBy: bill.owner,
+          owedBy: split.slave,
+          date: bill.created_at,
+      })
+      .from(bill)
+      .innerJoin(split, eq(bill.id, split.expenseId))
+      .where(
+          or(
+              // Current user paid, friend was part of the split
+              and(eq(bill.owner, userId), eq(split.slave, friendId)),
+              // Friend paid, current user was part of the split
+              and(eq(bill.owner, friendId), eq(split.slave, userId))
+          )
+      )
+      .orderBy(desc(bill.created_at));
+  }
 
+  /**
+   * Aggregate data for dashboard charts
+   * @param period 'day', 'week', 'month', or 'year'
+   */
+    async getChartData(
+    userId: string,
+    period: 'day' | 'week' | 'month' | 'year' = 'month'
+    ) {
+    const paidByMe = await db
+        .select({
+        date: sql<Date>`DATE_TRUNC(${sql.raw(`'${period}'`)}, ${bill.created_at})`,
+        totalAmount: sql<number>`COALESCE(SUM(${bill.totalAmount}),0)::int`,
+        })
+        .from(bill)
+        .where(eq(bill.owner, userId))
+        .groupBy(sql`DATE_TRUNC(${sql.raw(`'${period}'`)}, ${bill.created_at})`)
+        .orderBy(sql`DATE_TRUNC(${sql.raw(`'${period}'`)}, ${bill.created_at})`);
+
+    const owedByMe = await db
+        .select({
+        date: sql<Date>`DATE_TRUNC(${sql.raw(`'${period}'`)}, ${split.created_at})`,
+        totalAmount: sql<number>`COALESCE(SUM(${split.splitAmount}),0)::int`,
+        })
+        .from(split)
+        .where(eq(split.slave, userId))
+        .groupBy(sql`DATE_TRUNC(${sql.raw(`'${period}'`)}, ${split.created_at})`)
+        .orderBy(sql`DATE_TRUNC(${sql.raw(`'${period}'`)}, ${split.created_at})`);
+
+    return { paidByMe, owedByMe };
+}
 }

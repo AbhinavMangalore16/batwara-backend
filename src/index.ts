@@ -1,38 +1,44 @@
-import express from 'express'
-import cors from 'cors'
-import type {Request,Response} from 'express'
+import express from "express";
+import cors from "cors";
+import type { Request, Response } from "express";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./shared/infra/auth/better-auth.config";
-import userRouter from "../src/modules/user/api/user.routes"
-import expenseRouter from './modules/expenses/api/expense.routes';
+import userRouter from "../src/modules/user/api/user.routes";
+import expenseRouter from "./modules/expenses/api/expense.routes";
 
 const app = express();
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", process.env.FRONTEND_URL].filter(Boolean) as string[], 
+    origin: [
+      "http://localhost:3000",
+      "https://batwara-eosin.vercel.app"
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
+    allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept", "auth_token"],
   })
-)
+);
+
+app.options(/.*/, cors()); // ✅ Express 5 compatible
+
 app.use(express.json());
+
 const port = Number(process.env.PORT) || 8000;
 
-app.all("/api/auth/{*any}", toNodeHandler(auth)); //allows better auths predefined route paths to actually execute
+app.all("/api/auth/{*any}", toNodeHandler(auth));
 
-app.get('/', (req:Request, res:Response) => {
-  res.send('Hello World!')
-})
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello World!");
+});
 
-app.use("/api/users/",userRouter);
-app.use("/api/expenses/",expenseRouter);
+app.use("/api/users/", userRouter);
+app.use("/api/expenses/", expenseRouter);
 
-// Export app for testing
 export { app };
 
-// Only start server if not in test environment
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-  })
+    console.log(`Example app listening on port ${port}`);
+  });
 }

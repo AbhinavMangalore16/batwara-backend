@@ -28,4 +28,9 @@ export class UserService {
     const res = await this.userRepo.searchFriends(id);
     return res;
   }
+
+  async searchUsers(name: string){
+    const res = await this.userRepo.findByName(name);
+    return res;
+  }
 }

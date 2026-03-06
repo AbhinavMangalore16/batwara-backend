@@ -12,6 +12,7 @@ describe('ExpenseService - Unit Tests', () => {
       splitThat: mock(() => Promise.resolve({ transactionId: 'test-transaction-123' }))
     } as any;
     
+    // supply no settlement repository for these tests
     expenseService = new ExpenseService(mockRepo);
   });
 
@@ -165,6 +166,43 @@ describe('ExpenseService - Unit Tests', () => {
 
       const result = await expenseService.createBill('payer-id', billData);
       expect(result).toBeNull();
+    });
+  });
+
+  describe('getDashboardChartData', () => {
+    it('should delegate to repository with correct params', async () => {
+      const chartMock = { paidByMe: [], owedByMe: [] };
+      (mockRepo as any).getChartData = mock(() => Promise.resolve(chartMock));
+
+      const result = await expenseService.getDashboardChartData('userX', 'week');
+      expect(result).toBe(chartMock);
+      expect((mockRepo as any).getChartData).toHaveBeenCalledWith('userX', 'week');
+    });
+  });
+
+  describe('getFriendDetails', () => {
+    it('should return history and active settlement filtered by friendId', async () => {
+      const historyData = [{ id: 'bill1' }];
+      (mockRepo as any).getFriendTransactions = mock(() => Promise.resolve(historyData));
+      const fakeSettlementRepo = {
+        getUserSettlements: mock(() =>
+          Promise.resolve([
+            { from: 'userX', to: 'friendY', amount: 50 },
+            { from: 'other', to: 'userX', amount: 20 }
+          ])
+        )
+      } as any;
+
+      const service = new ExpenseService(mockRepo, fakeSettlementRepo);
+      const result = await service.getFriendDetails('userX', 'friendY');
+
+      expect(result.friendId).toBe('friendY');
+      expect(result.history).toBe(historyData);
+      expect(result.activeSettlements).toEqual([
+        { from: 'userX', to: 'friendY', amount: 50 }
+      ]);
+      expect(fakeSettlementRepo.getUserSettlements).toHaveBeenCalledWith('userX');
+      expect((mockRepo as any).getFriendTransactions).toHaveBeenCalledWith('userX', 'friendY');
     });
   });
 
