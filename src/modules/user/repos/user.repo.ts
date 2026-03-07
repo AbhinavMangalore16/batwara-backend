@@ -45,36 +45,38 @@ export class UserPGRepository {
       "message":"success"
     }
   }
-  async searchFriends(userId: string) {
-    const driver = graph();
+async searchFriends(userId: string) {
+  const driver = graph();
 
-    const result = await driver.executeQuery(
-      `
-      MATCH (p:Person {id:$userId})-[:FRIENDS_WITH]-(f:Person)
-      RETURN f.id AS id
-      `,
-      { userId }
-    );
+  const result = await driver.executeQuery(
+    `
+    MATCH (p: Person {id: $userId})-[:FRIENDS_WITH]-(f:Person)
+    RETURN f.id AS id
+    `,
+    { userId }
+  );
 
-    const friendIds = result.records.map((r) => r.get("id"));
+  const friendIds = result.records.map((record) =>
+    record.get("id")
+  );
 
-    if (friendIds.length === 0) {
-      return [];
-    }
+  if (!friendIds.length) return [];
 
-    const friends = await db
-      .select({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        image: user.image
-      })
+  // 🔥 Fetch full user details from Postgres
+  return await db
+    .select()
+    .from(user)
+    .where(inArray(user.id, friendIds));
+}
+
+  async getUsersByIds(ids: string[]) {
+    if (!ids.length) return [];
+
+    return await db
+      .select()
       .from(user)
-      .where(inArray(user.id, friendIds));
-
-    return friends;
+      .where(inArray(user.id, ids));
   }
-
   async findByName(email: string){
   const result = await db
     .select()
@@ -83,15 +85,5 @@ export class UserPGRepository {
     .limit(20);
 
   return result;
-  
 }
-  async getUsersByIds(ids: string[]) {
-      return await db
-          .select({
-          id: user.id,
-          name: user.name,
-          })
-          .from(user)
-          .where(inArray(user.id, ids));
-  }
 }
