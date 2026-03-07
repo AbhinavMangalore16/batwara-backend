@@ -27,16 +27,6 @@ advanced: {
     crossSubDomainCookies: {
     enabled: false,
     },
-
-    cookies: {
-    sessionToken: {
-        attributes: {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        },
-    },
-    },
 },
 
 databaseHooks,
