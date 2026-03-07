@@ -5,7 +5,12 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./shared/infra/auth/better-auth.config";
 import userRouter from "../src/modules/user/api/user.routes";
 import expenseRouter from "./modules/expenses/api/expense.routes";
-
+if (!process.env.BETTER_AUTH_URL) {
+  console.error("CRITICAL: BETTER_AUTH_URL is not defined in environment variables!");
+  process.exit(1);
+} else {
+  console.log("BETTER_AUTH_URL is set!", );
+}
 const app = express();
 app.set("trust proxy", 1);
 
@@ -16,18 +21,23 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true)
+    origin: (origin, callback) => {
 
+      if (!origin) return callback(null, true);
+      
       if (allowedOrigins.includes(origin)) {
-        return callback(null, true)
+        callback(null, true); 
+      } else {
+        console.error(`CORS blocked for origin: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
       }
-
-      return callback(new Error("Not allowed by CORS"))
     },
-    credentials: true
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept", "auth_token", "ngrok-skip-browser-warning"],
   })
-)
+);
+
 
 app.use(express.json());
 
