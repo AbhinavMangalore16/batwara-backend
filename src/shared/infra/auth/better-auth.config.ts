@@ -1,22 +1,40 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "../db/postgres/postgres-client.config"; // your drizzle instance
-// import { hooks } from "./better-auth.hooks";
+import { db } from "../db/postgres/postgres-client.config";
 
 export const auth = betterAuth({
-    appName: "batwaara",
-    database: drizzleAdapter(db, {
-        provider: "pg", // or "mysql", "sqlite"
-    }),
-    trustedOrigins: ["http://localhost:3000", "https://localhost:8000", process.env.FRONTEND_URL || ""],
-    emailAndPassword: { 
-        enabled: true, 
-    }, 
-    //hooks,
-    socialProviders: { 
-        github: { 
-            clientId: process.env.GITHUB_CLIENT_ID as string, 
-            clientSecret: process.env.GITHUB_CLIENT_SECRET as string, 
-        }, 
-    }, 
+  appName: "batwaara",
+  baseURL: process.env.BETTER_AUTH_URL,
+
+  database: drizzleAdapter(db, {
+    provider: "pg",
+  }),
+
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://batwara-eosin.vercel.app",
+  ],
+
+  emailAndPassword: {
+    enabled: true,
+  },
+
+  advanced: {
+    cookies: {
+      sessionToken: {
+        attributes: {
+          sameSite: "none",   
+          secure: true,       
+          httpOnly: true,
+        },
+      },
+    },
+  },
+
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
 });
