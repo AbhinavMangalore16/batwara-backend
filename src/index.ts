@@ -7,20 +7,28 @@ import userRouter from "../src/modules/user/api/user.routes";
 import expenseRouter from "./modules/expenses/api/expense.routes";
 
 const app = express();
+app.set("trust proxy", 1);
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://batwara-eosin.vercel.app",
+  process.env.FRONTEND_URL
+];
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://batwara-eosin.vercel.app"
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept", "auth_token"],
-  })
-);
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true)
 
-app.options(/.*/, cors()); // ✅ Express 5 compatible
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      }
+
+      return callback(new Error("Not allowed by CORS"))
+    },
+    credentials: true
+  })
+)
 
 app.use(express.json());
 
