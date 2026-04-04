@@ -16,8 +16,7 @@ app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://batwara-eosin.vercel.app",
-  "http://localhost:8000"
+  "https://batwara-eosin.vercel.app"
 ];
 
 app.use(
