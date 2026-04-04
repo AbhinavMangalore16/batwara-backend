@@ -3,7 +3,7 @@ import { graph } from '../../../shared/infra/db/neo4j/neo4j-client.config.js';
 import type { dtoTypes } from '../dtos/index';
 import { Schemas } from '../dtos/index';
 import { user } from './auth.schema.js';
-import { eq, ilike, inArray } from "drizzle-orm"
+import { eq, ilike } from "drizzle-orm"
 
 export class UserPGRepository {
   async findByEmail(email: string){
@@ -45,38 +45,22 @@ export class UserPGRepository {
       "message":"success"
     }
   }
-async searchFriends(userId: string) {
-  const driver = graph();
-
-  const result = await driver.executeQuery(
-    `
-    MATCH (p: Person {id: $userId})-[:FRIENDS_WITH]-(f:Person)
-    RETURN f.id AS id
-    `,
-    { userId }
-  );
-
-  const friendIds = result.records.map((record) =>
-    record.get("id")
-  );
-
-  if (!friendIds.length) return [];
-
-  // 🔥 Fetch full user details from Postgres
-  return await db
-    .select()
-    .from(user)
-    .where(inArray(user.id, friendIds));
-}
-
-  async getUsersByIds(ids: string[]) {
-    if (!ids.length) return [];
-
-    return await db
-      .select()
-      .from(user)
-      .where(inArray(user.id, ids));
+  async searchFriends(userId: string){
+    const driver = graph();
+    const result = await driver.executeQuery(
+      `
+      MATCH (p: Person {id: $userId})- [:FRIENDS_WITH]-(f:Person)
+      RETURN f
+      `,
+      {userId}
+    );
+  const friends = result.records.map((record)=>{
+    const friendNode = record.get('f');
+    return friendNode.properties;
+  });
+  return friends;
   }
+
   async findByName(email: string){
   const result = await db
     .select()
