@@ -16,7 +16,8 @@ app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://batwara-eosin.vercel.app"
+  "https://batwara-eosin.vercel.app",
+  ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
 ];
 
 app.use(
@@ -25,7 +26,10 @@ app.use(
 
       if (!origin) return callback(null, true);
       
-      if (allowedOrigins.includes(origin)) {
+      const isAllowedVercelPreview =
+        origin.startsWith("https://") && origin.endsWith(".vercel.app");
+
+      if (allowedOrigins.includes(origin) || isAllowedVercelPreview) {
         callback(null, true); 
       } else {
         console.error(`CORS blocked for origin: ${origin}`);

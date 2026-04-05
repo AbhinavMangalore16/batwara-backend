@@ -72,13 +72,17 @@ export class ExpenseService {
       
       if (res?.transactionId) {
         // Create settlements for each split
-        const settlements: Settlement[] = mappedData.map(split => ({
+        const settlements: Settlement[] = mappedData
+          .filter((split) => split.userId !== id)
+          .map(split => ({
           from: split.userId,
           to: id,
           amount: split.splitAmount
         }));
         
-        await this.settlementRepo.createSettlement(settlements);
+        if (settlements.length > 0) {
+          await this.settlementRepo.createSettlement(settlements);
+        }
         return res.transactionId;
       }
     } catch (error) {

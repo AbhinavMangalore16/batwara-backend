@@ -3,6 +3,14 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../db/postgres/postgres-client.config";
 import { databaseHooks } from "./better-auth.database-hooks";
 
+const trustedOrigins = [
+    "http://localhost:3000",
+    "https://batwara-eosin.vercel.app",
+    ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+].filter(Boolean);
+
+const isProd = process.env.NODE_ENV === "production";
+
 export const auth = betterAuth({
 appName: "batwaara",
 
@@ -12,10 +20,7 @@ database: drizzleAdapter(db, {
     provider: "pg",
 }),
 
-trustedOrigins: [
-    "http://localhost:3000",
-    "https://batwara-eosin.vercel.app",
-],
+trustedOrigins,
 
 emailAndPassword: {
     enabled: true,
@@ -28,6 +33,16 @@ advanced: {
     enabled: false,
     },
 },
+
+cookies: {
+    sessionToken: {
+      attributes: {
+        sameSite: "none",   // 🔥 CRITICAL FIX
+        secure: true,       // required with SameSite=None
+        httpOnly: true,
+      },
+    },
+  },
 
 databaseHooks,
 

@@ -53,6 +53,8 @@ export class ExpensePGRepository {
         const result = await driver.executeQuery(
             `
             UNWIND $map AS data
+            WITH data
+            WHERE data.slave <> $userId
             MATCH (payer:Person {id: $userId})
             MATCH (debtor:Person {id: data.slave})
             

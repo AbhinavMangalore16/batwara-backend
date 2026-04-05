@@ -3,7 +3,7 @@ import { graph } from '../../../shared/infra/db/neo4j/neo4j-client.config.js';
 import type { dtoTypes } from '../dtos/index';
 import { Schemas } from '../dtos/index';
 import { user } from './auth.schema.js';
-import { eq, ilike } from "drizzle-orm"
+import { eq, ilike, inArray } from "drizzle-orm"
 
 export class UserPGRepository {
   async findByEmail(email: string){
@@ -59,6 +59,20 @@ export class UserPGRepository {
     return friendNode.properties;
   });
   return friends;
+  }
+
+  async getUsersByIds(ids: string[]): Promise<Array<{ id: string; name: string }>> {
+    if (!ids.length) return [];
+
+    const rows = await db
+      .select({
+        id: user.id,
+        name: user.name,
+      })
+      .from(user)
+      .where(inArray(user.id, ids));
+
+    return rows;
   }
 
   async findByName(email: string){

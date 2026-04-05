@@ -47,12 +47,14 @@ export class SettlementNeo4jRepository {
 
         const owingResult = await driver.executeQuery(
             `MATCH (p:Person {id: $userId})-[s:SETTLEMENT]->(creditor:Person)
+            WHERE creditor.id <> $userId
             RETURN creditor.id AS to, s.amount AS amount`,
             { userId }
         );
 
         const receivingResult = await driver.executeQuery(
             `MATCH (debtor:Person)-[s:SETTLEMENT]->(p:Person {id: $userId})
+            WHERE debtor.id <> $userId
             RETURN debtor.id AS from, s.amount AS amount`,
             { userId }
         );
