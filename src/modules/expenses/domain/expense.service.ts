@@ -48,7 +48,9 @@ export class ExpenseService {
   }
 
   async createBill(id: string, billingObject: dtoTypes["BillDTO"]): Promise<string | null> {
-    const friendUsers = billingObject.splitData.data.map((v) => v.userId);
+    const friendUsers = billingObject.splitData.data
+    .map((v) => v.userId)
+    .filter((uid) => uid !== id);
     const validFriends = await this.expenseRepo.validAllFriends(id, friendUsers);
     if (!validFriends) {
       throw new Error("All users must be friends with the bill creator!");

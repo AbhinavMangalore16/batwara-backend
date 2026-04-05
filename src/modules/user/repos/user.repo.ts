@@ -32,7 +32,8 @@ export class UserPGRepository {
       `
       MATCH (p: Person {id: $userId})
       MATCH (f: Person {id: $friendId})
-      MERGE (p)-[:FRIENDS_WITH{ owes:0 }]->(f)
+      MERGE (p)-[:FRIENDS_WITH { owes:0 }]->(f)
+      MERGE (f)-[:FRIENDS_WITH { owes:0 }]->(p)
       RETURN p,f
       `,{
         userId, friendId
