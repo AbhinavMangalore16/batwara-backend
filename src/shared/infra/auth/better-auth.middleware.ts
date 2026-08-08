@@ -3,6 +3,7 @@ import { db } from '../db/postgres/postgres-client.config';
 import { user as userTable } from '../db/postgres/drizzle.schema';
 import { eq } from 'drizzle-orm';
 import { auth as betterAuthInstance } from "./better-auth.config";
+import { fromNodeHeaders } from "better-auth/node";
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -47,7 +48,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         let session = null;
         try {
             session = await betterAuthInstance.api.getSession({
-                headers: req.headers
+                headers: fromNodeHeaders(req.headers)
             });
         } catch (e) {
             // Invalid session cookie
