@@ -45,6 +45,9 @@ app.use(
 
 app.use(express.json());
 
+import { clerkMiddleware } from "@clerk/express";
+app.use(clerkMiddleware());
+
 const port = Number(process.env.PORT) || 8000;
 
 app.all("/api/auth/{*any}", toNodeHandler(auth));

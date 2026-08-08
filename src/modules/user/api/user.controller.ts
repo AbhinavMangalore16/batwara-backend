@@ -7,15 +7,15 @@ export class UserController {
 
   async getUserDetails(req: Request, res: Response) {
     try {
-      const email:string | undefined = Schemas.SearchUserSchema.parse(res.locals).email;
-      if(email){
+      const email: string | undefined = res.locals.email;
+      if (email) {
         const responseObject = await this.userService.getUserProfile(email);
         const result = Schemas.GetUserResponseSchema.parse(responseObject);
         return res.status(201).json(result);
       }
-      else return res.status(404).json({message: "Email not found in header"})
+      else return res.status(404).json({ message: "Email not found in header" });
     } catch (error) {
-      return res.status(400).json({error: error})
+      return res.status(400).json({ error: error });
     }
   }
 
