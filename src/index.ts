@@ -46,7 +46,17 @@ app.use(
 app.use(express.json());
 
 import { clerkMiddleware } from "@clerk/express";
-app.use(clerkMiddleware());
+if (process.env.CLERK_SECRET_KEY) {
+  app.use(
+    clerkMiddleware({
+      secretKey: process.env.CLERK_SECRET_KEY,
+      publishableKey:
+        process.env.CLERK_PUBLISHABLE_KEY ||
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+        "pk_test_ZnJlc2gtcGVuZ3Vpbi0zNi5jbGVyay5hY2NvdW50cy5kZXYk",
+    })
+  );
+}
 
 const port = Number(process.env.PORT) || 8000;
 
