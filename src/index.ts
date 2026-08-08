@@ -25,12 +25,12 @@ app.use(
     origin: (origin, callback) => {
 
       if (!origin) return callback(null, true);
-      
+
       const isAllowedVercelPreview =
         origin.startsWith("https://") && origin.endsWith(".vercel.app");
 
       if (allowedOrigins.includes(origin) || isAllowedVercelPreview) {
-        callback(null, true); 
+        callback(null, true);
       } else {
         console.error(`CORS blocked for origin: ${origin}`);
         callback(new Error("Not allowed by CORS"));
@@ -51,9 +51,8 @@ if (process.env.CLERK_SECRET_KEY) {
     clerkMiddleware({
       secretKey: process.env.CLERK_SECRET_KEY,
       publishableKey:
-        process.env.CLERK_PUBLISHABLE_KEY ||
-        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
-        "pk_test_ZnJlc2gtcGVuZ3Vpbi0zNi5jbGVyay5hY2NvdW50cy5kZXYk",
+        process.env.CLERK_PUBLISHABLE_KEY! ||
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!,
     })
   );
 }
