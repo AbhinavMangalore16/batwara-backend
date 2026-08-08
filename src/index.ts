@@ -68,6 +68,15 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/users/", userRouter);
 app.use("/api/expenses/", expenseRouter);
 
+// Catch Clerk handshake / JWT verification errors (e.g. jwk-kid-mismatch from old cookies)
+app.use((err: any, req: Request, res: Response, next: express.NextFunction) => {
+  if (err?.message?.includes("Clerk: Handshake token verification failed") || err?.reason === "jwk-kid-mismatch") {
+    console.warn("Clerk session token mismatch. Returning 401 unauthorized.");
+    return res.status(401).json({ message: "Invalid or expired session token. Please sign in again." });
+  }
+  return res.status(500).json({ message: "Internal server error", error: err?.message || err });
+});
+
 export { app };
 
 if (process.env.NODE_ENV !== "test") {
