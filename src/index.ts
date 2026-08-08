@@ -9,7 +9,7 @@ if (!process.env.BETTER_AUTH_URL) {
   console.error("CRITICAL: BETTER_AUTH_URL is not defined in environment variables!");
   process.exit(1);
 } else {
-  console.log("BETTER_AUTH_URL is set!", );
+  console.log("BETTER_AUTH_URL is set!", process.env.BETTER_AUTH_URL);
 }
 const app = express();
 app.set("trust proxy", 1);

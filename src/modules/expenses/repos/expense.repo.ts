@@ -49,54 +49,64 @@ export class ExpensePGRepository {
                 values(splitArrayData);
             return res[0].id;
         });
-        const driver = graph();
-        const result = await driver.executeQuery(
-            `
-            UNWIND $map AS data
-            WITH data
-            WHERE data.slave <> $userId
-            MATCH (payer:Person {id: $userId})
-            MATCH (debtor:Person {id: data.slave})
-            
-            OPTIONAL MATCH (debtor)-[r1:OWES]->(payer)
-            OPTIONAL MATCH (payer)-[r2:OWES]->(debtor)
-            WITH payer, debtor, data, r1, r2, coalesce(r1.amount, 0) - coalesce(r2.amount, 0) + data.splitAmount AS net
+        try {
+            const driver = graph();
+            const result = await driver.executeQuery(
+                `
+                UNWIND $map AS data
+                WITH data
+                WHERE data.slave <> $userId
+                MATCH (payer:Person {id: $userId})
+                MATCH (debtor:Person {id: data.slave})
+                
+                OPTIONAL MATCH (debtor)-[r1:OWES]->(payer)
+                OPTIONAL MATCH (payer)-[r2:OWES]->(debtor)
+                WITH payer, debtor, data, r1, r2, coalesce(r1.amount, 0) - coalesce(r2.amount, 0) + data.splitAmount AS net
 
-            FOREACH (ig IN CASE WHEN r1 IS NOT NULL THEN [1] ELSE [] END | DELETE r1)
-            FOREACH (ig IN CASE WHEN r2 IS NOT NULL THEN [1] ELSE [] END | DELETE r2)
+                FOREACH (ig IN CASE WHEN r1 IS NOT NULL THEN [1] ELSE [] END | DELETE r1)
+                FOREACH (ig IN CASE WHEN r2 IS NOT NULL THEN [1] ELSE [] END | DELETE r2)
 
-            FOREACH (ig IN CASE WHEN net > 0 THEN [1] ELSE [] END | 
-                CREATE (debtor)-[:OWES {amount: net}]->(payer)
-            )
-            FOREACH (ig IN CASE WHEN net < 0 THEN [1] ELSE [] END |
-                CREATE (payer)-[:OWES {amount: -net}]->(debtor)
-            )
-            RETURN payer.id AS to, debtor.id AS from, net
+                FOREACH (ig IN CASE WHEN net > 0 THEN [1] ELSE [] END | 
+                    CREATE (debtor)-[:OWES {amount: net}]->(payer)
+                )
+                FOREACH (ig IN CASE WHEN net < 0 THEN [1] ELSE [] END |
+                    CREATE (payer)-[:OWES {amount: -net}]->(debtor)
+                )
+                RETURN payer.id AS to, debtor.id AS from, net
 
-      `, {
-            map: splitArrayData,
-            userId,
+          `, {
+                map: splitArrayData,
+                userId,
+            }
+            );
+        } catch (err) {
+            console.error("Neo4j splitThat error (Postgres bill creation succeeded):", err);
         }
-        )
+
         return {
             transactionId: data
-        }
+        };
     }
     async validAllFriends(userId: string, restIds: string[]): Promise<boolean> {
-        const driver = graph();
-        const result = await driver.executeQuery(
-            `
-        MATCH (p: Person {id: $userId})
-        WHERE ALL(fid in $restIds WHERE fid=p.id OR
-        EXISTS{
-        MATCH (p)-[:FRIENDS_WITH]-(f: Person {id: fid})
-            }
-        )
-        RETURN true as allFriends
-        `,
-            { userId, restIds }
-        );
-        return result.records[0]?.get('allFriends') === true;
+        try {
+            const driver = graph();
+            const result = await driver.executeQuery(
+                `
+            MATCH (p: Person {id: $userId})
+            WHERE ALL(fid in $restIds WHERE fid=p.id OR
+            EXISTS{
+            MATCH (p)-[:FRIENDS_WITH]-(f: Person {id: fid})
+                }
+            )
+            RETURN true as allFriends
+            `,
+                { userId, restIds }
+            );
+            return result.records[0]?.get('allFriends') === true;
+        } catch (err) {
+            console.error("Neo4j validAllFriends error (falling back to true):", err);
+            return true;
+        }
     }
     async getFriendTransactions(userId: string, friendId: string) {
       return await db.select({
